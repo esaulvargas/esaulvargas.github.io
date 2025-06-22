@@ -1,0 +1,80 @@
+html, body {
+  height: 100%;
+}
+
+body {
+  font-family: 'Comic Neue', cursive, sans-serif;
+  background: #fffef5;
+  padding: 20px;
+  margin: 0;
+}
+
+.tabs {
+  list-style: none;
+  display: flex;
+  padding: 0;
+  margin: 0 0 20px 0;
+  border: 1px solid #000;
+  border-radius: 5px;
+  overflow: hidden;
+  box-shadow: 2px 2px 8px rgba(0,0,0,0.1);
+}
+
+.tabs li {
+  flex: 1;
+  text-align: center;
+  padding: 10px 0;
+  font-weight: bold;
+  border-right: 1px solid #000;
+}
+
+.tabs li:last-child {
+  border-right: none;
+}
+
+.tabs a {
+  color: black;
+  text-decoration: none;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.tabs a:hover {
+  opacity: 0.85;
+}
+
+iframe {
+  width: 100%;
+  height: calc(100vh - 120px); /* Ajusta si es necesario */
+  border: 2px solid #ccc;
+  border-radius: 10px;
+  background: #fff;
+}
+/* === RESPONSIVE DESIGN para tablet y móvil === */
+@media (max-width: 768px) {
+  .tabs {
+    flex-direction: column;
+    border-radius: 10px;
+  }
+
+  .tabs li {
+    border-right: none;
+    border-bottom: 1px solid #000;
+    padding: 12px;
+  }
+
+  .tabs li:last-child {
+    border-bottom: none;
+  }
+
+  iframe {
+    height: 60vh; /* reduce un poco el alto en pantallas pequeñas */
+  }
+}
+
+@media (min-width: 769px) {
+  iframe {
+    height: calc(100vh - 120px); /* en PC, ocupa toda la pantalla menos las pestañas */
+  }
+}
