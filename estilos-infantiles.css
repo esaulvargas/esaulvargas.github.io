@@ -53,12 +53,13 @@ button:hover {
 /* === Enlaces === */
 a {
   text-decoration: none;
-  color: #333;
   font-weight: bold;
+  color: blue;
 }
 
 a:hover {
   color: #FF1493;
+
 }
 
 /* === Menú flotante === */
