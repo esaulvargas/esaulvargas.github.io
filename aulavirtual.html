@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Aula Virtual Primaria</title>
+  <link rel="stylesheet" href="estilos-tabs.css">
+  <link rel="icon" href="favicon.ico" type="image/x-icon">
+</head>
+<body>
+
+  <ul class="tabs">
+    <li style="background-color: green;"><a href="#" onclick="cargar('natural.html')">NATURAL</a></li>
+    <li style="background-color: purple;"><a href="#" onclick="cargar('social.html')">SOCIAL</a></li>
+    <li style="background-color: pink;"><a href="#" onclick="cargar('english.html')">ENGLISH</a></li>
+    <li style="background-color: red;"><a href="#" onclick="cargar('lengua.html')">LENGUA</a></li>
+    <li style="background-color: blue;"><a href="#" onclick="cargar('matematicas.html')">MATEMÁTICAS</a></li>
+  </ul>
+
+  <iframe id="contenido" name="contenido" src="natural.html" frameborder="0"></iframe>
+
+  <script>
+    function cargar(url) {
+      document.getElementById("contenido").src = url;
+    }
+  </script>
+
+</body>
+</html>
