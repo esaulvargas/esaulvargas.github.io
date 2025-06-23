@@ -1,8 +1,6 @@
-@import url('https://fonts.googleapis.com/css2?family=Comic+Neue&display=swap');
-
 /* === Estilo general === */
 body {
-  font-family: 'Comic Neue', 'Comic Sans MS', cursive, sans-serif;
+  font-family: 'Comic Sans MS', Verdana, sans-serif, cursive;
   padding: 20px;
   background: #FFFAF0; /* color crema suave */
   color: #444;
