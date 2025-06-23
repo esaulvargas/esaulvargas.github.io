@@ -1,6 +1,13 @@
 /* === Estilo general === */
+
+@font-face {
+  font-family: ComicNeue;
+  src: url('fuentes/comicneue.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+}
 body {
-  font-family: 'Comic Neue', 'Comic Sans MS', Verdana, sans-serif;
+  font-family: 'ComicNeue', 'Comic Sans MS', Verdana, sans-serif;
   padding: 20px;
   background: #FFFAF0; /* color crema suave */
   color: #444;
