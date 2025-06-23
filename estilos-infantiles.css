@@ -72,6 +72,18 @@ a:hover {
 
 }
 
+.ingles a {
+  text-decoration: none;
+  font-weight: bold;
+  color: blue;
+  font-size: 1.3em; /* tamaño más grande */
+}
+
+.inlges li {
+  margin-bottom: 1em; /* más separación entre elementos */
+  font-size: 1.2em;   /* también puede aumentar el texto en los li */
+}
+
 /* === Menú flotante === */
 .menu-flotante {
   position: fixed;
