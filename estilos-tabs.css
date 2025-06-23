@@ -1,5 +1,5 @@
 @font-face {
-  font-family: 'ComicNeue';
+  font-family: ComicNeue;
   src: url('fuentes/comicNeue.woff2') format('woff2');
   font-weight: normal;
   font-style: normal;
@@ -9,7 +9,7 @@ html, body {
 }
 
 body {
-  font-family: 'ComicNeue', 'Comic Sans MS', Verdana, sans-serif;
+  font-family: ComicNeue, 'Comic Sans MS', Verdana, sans-serif;
   background: #fffef5;
   padding: 20px;
   margin: 0;
