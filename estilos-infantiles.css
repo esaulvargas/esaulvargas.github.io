@@ -7,7 +7,12 @@ body {
   margin-right: 220px; /* deja espacio para el menú flotante */
   font-size:14
 }
-
+h1 {
+  font-size: 4em;
+  text-align: center;
+  font-family: 'ComicNeue', sans-serif;
+  font-weight: bold;
+}
 h2, h3 {
   color: #FF69B4; /* rosa fuerte */
   text-shadow: 1px 1px #fff;
