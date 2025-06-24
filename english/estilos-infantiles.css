@@ -73,6 +73,8 @@ a:hover {
   z-index: 1000;
   width: 240px;
   font-family: 'Comic Neue', cursive;
+  max-height: 90vh;       /* limita la altura al 90% de la pantalla */
+  overflow-y: auto;       /* activa scroll si hace falta */
 }
 
 .menu-flotante h4 {
