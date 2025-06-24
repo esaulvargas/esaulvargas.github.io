@@ -96,7 +96,7 @@ a:hover {
   box-shadow: 0 4px 10px rgba(0,0,0,0.1);
   z-index: 1000;
   width: 240px;
-  font-family: 'Comic Neue', cursive;
+  font-family: 'ComicNeue';
   max-height: 90vh;
   overflow-y: auto;
   overflow-x: hidden;

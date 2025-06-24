@@ -9,8 +9,8 @@ html, body {
 }
 
 body {
-  font-family: ComicNeue, 'Comic Sans MS', Verdana, sans-serif;
-  background: #fffef5;
+  font-family: 'ComicNeue', 'Comic Sans MS', Verdana, sans-serif;
+  background: #000000;
   padding: 20px;
   margin: 0;
 }
