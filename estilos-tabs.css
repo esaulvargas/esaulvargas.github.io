@@ -10,7 +10,7 @@ html, body {
 
 body {
   font-family: 'ComicNeue', 'Comic Sans MS', Verdana, sans-serif;
-  background: #000000;
+  background: #a4bfc4;
   padding: 20px;
   margin: 0;
 }
@@ -20,8 +20,8 @@ body {
   display: flex;
   padding: 0;
   margin: 0 0 20px 0;
-  border: 1px solid #000;
-  border-radius: 5px;
+  border: 2px solid #000;
+  border-radius: 7px;
   overflow: hidden;
   box-shadow: 2px 2px 8px rgba(0,0,0,0.1);
 }
@@ -31,7 +31,7 @@ body {
   text-align: center;
   padding: 10px 0;
   font-weight: bold;
-  border-right: 1px solid #000;
+  border-right: 2px solid #000;
 }
 
 .tabs li:last-child {
@@ -51,6 +51,7 @@ a:hover {
 .tabs a:hover {
   opacity: 0.85;
   color: #FF1493;
+  background: #fff;
 }
 
 iframe {

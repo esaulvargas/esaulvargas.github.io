@@ -1,14 +1,25 @@
-@import url('https://fonts.googleapis.com/css2?family=Comic+Neue&display=swap');
-
 /* === Estilo general === */
+
+@font-face {
+  font-family: ComicNeue;
+  src: url('fuentes/comicneue.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+}
 body {
-  font-family: 'Comic Neue', cursive, sans-serif;
+  font-family: 'ComicNeue', 'Comic Sans MS', Verdana, sans-serif;
   padding: 20px;
   background: #FFFAF0; /* color crema suave */
   color: #444;
   margin-right: 220px; /* deja espacio para el menú flotante */
+  font-size:22px
 }
-
+h1.titulo-principal {
+  font-size: 4em;
+  text-align: center;
+  font-family: 'ComicNeue', sans-serif;
+  font-weight: bold;
+}
 h2, h3 {
   color: #FF69B4; /* rosa fuerte */
   text-shadow: 1px 1px #fff;
@@ -52,29 +63,48 @@ button:hover {
 /* === Enlaces === */
 a {
   text-decoration: none;
-  color: #333;
   font-weight: bold;
+  color: blue;
 }
 
 a:hover {
   color: #FF1493;
+
+}
+
+.ingles a {
+  text-decoration: none;
+  font-weight: bold;
+  color: blue;
+  font-size: 1em; /* tamaño más grande */
+}
+
+.ingles li {
+  margin-bottom: 0.6em; /* más separación entre elementos */
+  font-size: 1em;   /* también puede aumentar el texto en los li */
+}
+
+.li {
+  margin-bottom: 0.6em; /* más separación entre elementos */
+  font-size: 1em;   /* también puede aumentar el texto en los li */
 }
 
 /* === Menú flotante === */
 .menu-flotante {
   position: fixed;
   top: 20px;
-  right: 20px;
+  left: 20;
   background: #FFF8DC;
   border: 2px dashed #FFD700;
   padding: 15px;
   border-radius: 15px;
   box-shadow: 0 4px 10px rgba(0,0,0,0.1);
   z-index: 1000;
-  width: 240px;
-  font-family: 'Comic Neue', cursive;
-  max-height: 90vh;       /* limita la altura al 90% de la pantalla */
-  overflow-y: auto;       /* activa scroll si hace falta */
+  width: 100%;
+  font-family: 'ComicNeue';
+  max-height: 90vh;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .menu-flotante h4 {
@@ -99,6 +129,105 @@ a:hover {
 }
 
 .menu-flotante a:hover {
+  color: #FF1493;
+}
+.responsive-iframe {
+  max-width: 50%;
+}
+
+.tabla-menu {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 5px;
+  font-family: 'Comic Neue', cursive;
+}
+
+.tabla-menu td {
+  border: 2px dashed #f80f9f;
+  padding: 8px;
+  background-color: #f5cadb;
+  text-align: center;
+  border-radius: 10px;
+}
+
+.tabla-menu a {
+  text-decoration: none;
+  color: #30409e;
+  font-weight: bold;
+  font-size: 0.7em;
+}
+
+.tabla-menu a:hover {
+  color: #FF1493;
+}
+
+.tabla-horizontal {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 5px auto;
+  table-layout: fixed;
+}
+
+.tabla-horizontal td {
+  border: 2px dashed deeppink;
+  background-color: #f5cadb;
+  text-align: center;
+  padding: 8px;
+  font-family: 'Comic Neue', cursive;
+  font-weight: bold;
+  font-size: 0.7em;
+  width: auto;
+}
+
+.tabla-horizontal a {
+  text-decoration: none;
+  color: #30409e;
+}
+
+.tabla-horizontal a:hover {
+  color: #FF1493;
+}
+
+/* === Menú flotante Ingles === */
+.menu-flotante-ingles {
+  position: fixed;
+  top: 100px;
+  right: 25px;
+  background: #FFF8DC;
+  border: 2px dashed #FFD700;
+  padding: 15px;
+  border-radius: 15px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  z-index: 1000;
+  width: 240px;
+  font-family: 'ComicNeue';
+  max-height: 90vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.menu-flotante-ingles h4 {
+  margin-top: 0;
+  font-size: 18px;
+  color: #FF69B4;
+}
+
+.menu-flotante-ingles ul {
+  list-style: none;
+  padding-left: 0;
+}
+
+.menu-flotante-ingles li {
+  margin-bottom: 10px;
+}
+
+.menu-flotante-ingles a {
+  text-decoration: none;
+  color: #333;
+  font-weight: bold;
+}
+
+.menu-flotante-ingles a:hover {
   color: #FF1493;
 }
 .responsive-iframe {
