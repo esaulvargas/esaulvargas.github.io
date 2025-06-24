@@ -79,7 +79,12 @@ a:hover {
   font-size: 2em; /* tamaño más grande */
 }
 
-.inlges li {
+.ingles li {
+  margin-bottom: 1em; /* más separación entre elementos */
+  font-size: 2em;   /* también puede aumentar el texto en los li */
+}
+
+.li {
   margin-bottom: 1em; /* más separación entre elementos */
   font-size: 2em;   /* también puede aumentar el texto en los li */
 }
@@ -115,7 +120,6 @@ a:hover {
 
 .menu-flotante li {
   margin-bottom: 10px;
-  font-size: 14px;
 }
 
 .menu-flotante a {
