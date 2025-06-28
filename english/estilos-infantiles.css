@@ -176,7 +176,9 @@ a:hover {
 }
 
 .menu-flotante li {
-  margin-bottom: 10px;
+  margin-bottom: 5px;
+  font-size: 18px;
+
 }
 
 .menu-flotante a {
@@ -258,6 +260,7 @@ a:hover {
     font-size: 18px;
     color: #FF69B4;
     font-weight: bold;
+    
   }
 
 .menu-flotante-ingles a {
