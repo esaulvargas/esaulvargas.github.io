@@ -89,48 +89,6 @@ a:hover {
   font-size: 1em;   /* también puede aumentar el texto en los li */
 }
 
-/* === Menú flotante === */
-.menu-flotante {
-  position: fixed;
-  top: 20px;
-  left: 20;
-  background: #FFF8DC;
-  border: 2px dashed #FFD700;
-  padding: 15px;
-  border-radius: 15px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-  z-index: 1000;
-  width: 100%;
-  font-family: 'ComicNeue';
-  max-height: 90vh;
-  overflow-y: auto;
-  overflow-x: hidden;
-}
-
-.menu-flotante h4 {
-  margin-top: 0;
-  font-size: 18px;
-  color: #FF69B4;
-}
-
-.menu-flotante ul {
-  list-style: none;
-  padding-left: 0;
-}
-
-.menu-flotante li {
-  margin-bottom: 10px;
-}
-
-.menu-flotante a {
-  text-decoration: none;
-  color: #333;
-  font-weight: bold;
-}
-
-.menu-flotante a:hover {
-  color: #FF1493;
-}
 .responsive-iframe {
   max-width: 50%;
 }
@@ -188,10 +146,83 @@ a:hover {
   color: #FF1493;
 }
 
+/* === Menú flotant === */
+.menu-flotante {
+  position: fixed;
+  top: 200px;
+  right: 25px;
+  background: #FFF8DC;
+  border: 2px dashed #FFD700;
+  padding: 15px;
+  border-radius: 15px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  z-index: 1000;
+  width: 240px;
+  font-family: 'ComicNeue';
+  max-height: 90vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.menu-flotante h4 {
+  margin-top: 0;
+  font-size: 18px;
+  color: #FF69B4;
+}
+
+.menu-flotante ul {
+  list-style: none;
+  padding-left: 0;
+}
+
+.menu-flotante li {
+  margin-bottom: 10px;
+}
+
+.menu-flotante a {
+  text-decoration: none;
+  color: #333;
+  font-weight: bold;
+}
+
+.menu-flotante a:hover {
+  color: #FF1493;
+}
+.responsive-iframe {
+  max-width: 50%;
+}
+.barra-unidades {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  background: #FFF8DC;
+  border: 2px dashed deeppink;
+  padding: 10px;
+  font-family: 'Comic Neue', cursive;
+  font-weight: bold;
+}
+
+.barra-unidades a {
+  flex: 1 1 auto;
+  text-align: center;
+  padding: 8px;
+  margin: 2px;
+  background: #fef6f6;
+  text-decoration: none;
+  color: #333;
+  border: 1px solid deeppink;
+  border-radius: 6px;
+  min-width: 120px;
+}
+
+.barra-unidades a:hover {
+  color: #FF1493;
+}
+
 /* === Menú flotante Ingles === */
 .menu-flotante-ingles {
   position: fixed;
-  top: 100px;
+  top: 10px;
   right: 25px;
   background: #FFF8DC;
   border: 2px dashed #FFD700;
@@ -215,21 +246,26 @@ a:hover {
 .menu-flotante-ingles ul {
   list-style: none;
   padding-left: 0;
+  margin-top: 0;
+  padding-top: 0;
+  margin-bottom: 0;
+  padding-bottom: 0;
+
 }
 
 .menu-flotante-ingles li {
-  margin-bottom: 10px;
-}
+    margin-top: 0;
+    font-size: 18px;
+    color: #FF69B4;
+    font-weight: bold;
+  }
 
 .menu-flotante-ingles a {
   text-decoration: none;
-  color: #333;
+  color: #000000;
   font-weight: bold;
 }
 
 .menu-flotante-ingles a:hover {
-  color: #FF1493;
-}
-.responsive-iframe {
-  max-width: 50%;
+  color: #FF69B4;
 }

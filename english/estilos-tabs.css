@@ -1,5 +1,5 @@
 body {
-  font-family: 'Comic Neue', cursive, sans-serif;
+  font-family: 'ComicNeue', cursive, sans-serif;
   background: rgb(197, 175, 143);
   padding: 20px;
   margin: 0;
@@ -43,6 +43,7 @@ body {
 iframe {
   width: 100%;
   height: 600px;
+  display: block;
   border: 2px solid #ccc;
   border-radius: 10px;
   background: #fff;
