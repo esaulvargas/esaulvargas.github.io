@@ -62,7 +62,7 @@ iframe {
   background: #fff;
 }
 /* === RESPONSIVE DESIGN para tablet y móvil === */
-@media (max-width: 650px) {
+@media (max-width: 750px) {
   .tabs {
     flex-direction: column;
     border-radius: 10px;
@@ -79,11 +79,10 @@ iframe {
   }
 
   iframe {
-    height: 60vh; /* reduce un poco el alto en pantallas pequeñas */
+    height: 50vh; /* reduce un poco el alto en pantallas pequeñas */
   }
 }
-
-@media (min-width: 620px) {
+@media (min-width: 750px) {
   iframe {
     height: calc(100vh - 100px); /* en PC, ocupa toda la pantalla menos las pestañas */
   }
