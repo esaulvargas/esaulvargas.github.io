@@ -1,14 +1,73 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-<link rel="stylesheet" href="estilos-infantiles.css">
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mis Aplicaciones</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f6;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 30px;
+        }
+        .container {
+            width: 100%;
+            max-width: 600px;
+        }
+        .app-link {
+            display: block;
+            background: white;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            text-decoration: none;
+            color: #2c3e50;
+            font-weight: bold;
+            font-size: 1.1rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            transition: transform 0.2s, box-shadow 0.2s;
+            border-left: 5px solid #3498db;
+        }
+        .app-link:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+            background-color: #fcfcfc;
+        }
+        .description {
+            display: block;
+            font-weight: normal;
+            font-size: 0.9rem;
+            color: #7f8c8d;
+            margin-top: 5px;
+        }
+    </style>
 </head>
 <body>
-<h1 style="color: rgb(210, 0, 233)" class="titulo-principal">
-  Selecciona una materia
-</h1>
+
+    <h1>Mis Aplicaciones Web</h1>
+
+    <div class="container">
+        <!-- Enlace a la app de palabras -->
+        <a href="palabras_j_g_tablet.html" class="app-link">
+            Juego de Palabras (J/G)
+            <span class="description">Aplicación interactiva optimizada para tablet.</span>
+        </a>
+
+        <!-- Enlace a la app de ciencias -->
+        <a href="ciencias_tablet.html" class="app-link">
+            Aplicación de Ciencias
+            <span class="description">Lecciones o actividades de ciencias para tablet.</span>
+        </a>
+    </div>
 
 </body>
 </html>

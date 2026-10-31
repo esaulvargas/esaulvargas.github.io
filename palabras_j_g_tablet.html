@@ -1,0 +1,616 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="theme-color" content="#f3f6ff">
+<title>La aventura de la J y la G</title>
+<style>
+:root{--ink:#263451;--blue:#496fe5;--blue2:#e9efff;--green:#168467;--greenbg:#e3f7ee;--red:#b84d36;--redbg:#fff0e9;--yellow:#fff2c9;--line:#dce4f2;--bg:#f3f6ff}
+*{box-sizing:border-box}
+html{min-height:100%;-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;touch-action:manipulation;overflow-x:hidden}
+header{text-align:center;padding:18px 16px 12px}
+h1{font-size:clamp(1.55rem,3.4vw,2.5rem);margin:0 0 5px}
+header p{margin:0;color:#5c6880;font-size:clamp(.95rem,2vw,1.1rem)}
+main{width:min(1100px,100%);margin:auto;padding:10px 16px 28px}
+button{font-family:inherit;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+button:focus-visible,.bucket:focus-visible{outline:4px solid #f2b94b;outline-offset:3px}
+
+.tabs{display:none;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:14px}
+.tab{min-height:68px;border:2px solid var(--line);border-radius:17px;background:#fff;color:var(--ink);font-size:clamp(.9rem,1.7vw,1.1rem);font-weight:800;padding:10px 6px}
+.tab.active{background:var(--blue);border-color:var(--blue);color:#fff}
+
+.panel{background:#fff;border:2px solid var(--line);border-radius:24px;padding:clamp(16px,3vw,30px);min-height:440px;box-shadow:0 8px 24px #2634510b}
+.topline{display:none;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.tag,.score,.rule-tag{border-radius:999px;padding:8px 13px;font-weight:800}
+.tag{background:var(--blue2);color:#3154b4}
+.score{background:var(--yellow)}
+.rule-tag{background:#e8f4d9;color:#396600}
+
+.prompt{text-align:center;font-size:clamp(1.3rem,3vw,2rem);font-weight:850;margin:24px 0 18px}
+.subprompt{text-align:center;color:#66728a;margin:-8px 0 18px}
+.bigword{text-align:center;font-size:clamp(2.1rem,7vw,4.2rem);font-weight:900;letter-spacing:1px;margin:18px 0 22px;overflow-wrap:anywhere}
+.options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;max-width:760px;margin:0 auto}
+.choice{min-height:76px;border:3px solid var(--line);border-radius:18px;background:#fff;color:var(--ink);font-size:clamp(1.2rem,3vw,1.8rem);font-weight:850;padding:12px}
+.choice.correct{background:var(--greenbg);border-color:var(--green)}
+.choice.wrong{background:var(--redbg);border-color:var(--red)}
+.actions{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:22px}
+.action{border:0;border-radius:15px;padding:13px 20px;min-height:54px;background:var(--blue);color:#fff;font-size:1.05rem;font-weight:850}
+.action.secondary{background:var(--blue2);color:#3154b4}
+.action.guide{background:var(--yellow);color:#7a5200;border:2px solid #f2b94b}
+.feedback{text-align:center;min-height:34px;margin-top:18px;font-size:1.1rem;font-weight:800}
+.feedback.good{color:var(--green)}.feedback.bad{color:var(--red)}
+.explain{border:2px solid;border-radius:15px;padding:12px 16px;margin:14px auto 0;max-width:700px;text-align:center;font-weight:600}
+.explain.bad{background:var(--redbg);border-color:var(--red);color:var(--red)}
+.explain.good{background:var(--greenbg);border-color:var(--green);color:var(--green)}
+
+.sortwords{display:flex;justify-content:center;flex-wrap:wrap;gap:10px;margin:18px 0;min-height:60px}
+.chip{min-height:54px;min-width:90px;border:2px solid #cbd7fa;border-radius:14px;padding:10px 14px;background:#f4f6ff;font-size:1.2rem;font-weight:800;color:var(--ink)}
+.chip.selected{background:#dce6ff;border-color:var(--blue);transform:scale(1.06)}
+.chip.correct{background:var(--greenbg);border-color:var(--green)}
+.chip.wrong{background:var(--redbg);border-color:var(--red)}
+.sortrow{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:18px}
+.bucket{min-height:130px;border:3px dashed var(--line);border-radius:18px;padding:12px;text-align:center;cursor:pointer}
+.bucket.ready{border-color:var(--blue);background:#f4f7ff}
+.bucket h3{margin:0 0 8px;font-size:1.5rem}
+.bucket .chip{margin:4px}
+
+.canvaswrap{position:relative;max-width:820px;margin:auto;border:3px solid var(--line);border-radius:18px;overflow:hidden;background:#fff}
+canvas#pad{display:block;width:100%;height:auto;aspect-ratio:1000/260;touch-action:none;position:relative;z-index:2;background:linear-gradient(to bottom,transparent 0 64%,#c9d4ec 64% 65%,transparent 65%)}
+.guide{position:absolute;inset:0;z-index:1;display:none;align-items:center;justify-content:center;font-family:"Comic Sans MS","Chalkboard SE",cursive,sans-serif;font-size:clamp(3rem,13vw,8rem);color:#d3dcf2;pointer-events:none;user-select:none}
+.guide.on{display:flex}
+.hint{text-align:center;color:#66728a;margin:10px 0}
+.rule{background:#f0f3ff;border-radius:15px;padding:14px 16px;margin-top:18px;line-height:1.5;display:none}
+.model-box{margin-top:15px;padding:15px;background:#fff8e7;border:3px dashed #f2b94b;border-radius:18px;text-align:center}
+.model-word{font-family:"Comic Sans MS","Chalkboard SE",cursive,sans-serif;font-size:clamp(2.2rem,8vw,3.4rem);color:var(--blue);letter-spacing:2px;font-weight:bold}
+
+.selector-screen{text-align:center;padding:20px 10px}
+.level-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:15px;margin:20px 0}
+.level-card{background:#fff;border:3px solid var(--line);border-radius:18px;padding:20px 15px;text-align:center;color:var(--ink);transition:transform .15s,border-color .15s}
+.level-card:hover,.level-card:active{border-color:var(--blue);transform:translateY(-3px)}
+.level-card h3{margin:0 0 8px;color:var(--blue);font-size:1.3rem}
+.level-card p{margin:0;font-size:.95rem;color:#66728a}
+#confettiCanvas{position:fixed;top:0;left:0;width:100vw;height:100vh;pointer-events:none;z-index:999}
+.nojs{padding:20px;text-align:center;font-weight:700}
+
+
+/* Barra fija + guía emergente */
+.toolbar{position:sticky;top:0;z-index:50;display:flex;gap:10px;justify-content:center;padding:8px 0 10px;margin-bottom:6px;background:var(--bg)}
+.tool{min-height:52px;border:2px solid var(--line);border-radius:15px;background:#fff;color:#3154b4;font-size:1.05rem;font-weight:850;padding:8px 18px}
+.tool.guide{background:var(--yellow);border-color:#f2b94b;color:#7a5200}
+.overlay{position:fixed;inset:0;background:#1d2a4585;z-index:1000;display:none;align-items:center;justify-content:center;padding:12px}
+.overlay.on{display:flex}
+.sheet{background:#fff;border-radius:22px;width:min(780px,100%);max-height:92vh;display:flex;flex-direction:column;box-shadow:0 20px 60px #0004}
+.sheet-head{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:14px 18px;border-bottom:2px solid var(--line)}
+.sheet-head h2{margin:0;font-size:clamp(1.15rem,3vw,1.5rem)}
+.close{min-height:48px;min-width:48px;border:0;border-radius:14px;background:var(--blue);color:#fff;font-size:1.05rem;font-weight:850;padding:8px 16px}
+.sheet-body{overflow-y:auto;-webkit-overflow-scrolling:touch;padding:6px 18px 22px;line-height:1.5}
+.sheet-body h3{margin:18px 0 4px;font-size:1.15rem}
+.gcard{border:2px solid var(--line);border-radius:16px;padding:12px 14px;margin:10px 0}
+.gcard.j{border-color:#cbd7fa;background:#f4f7ff}
+.gcard.g{border-color:#bfe6d6;background:#f0fbf6}
+.gcard.current{outline:4px solid #f2b94b}
+.gcard h4{margin:0 0 4px;font-size:1.1rem;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.lt{display:inline-block;min-width:34px;text-align:center;border-radius:10px;padding:1px 8px;color:#fff;font-weight:900}
+.lt.j{background:var(--blue)}.lt.g{background:var(--green)}
+.gcard p{margin:4px 0}
+.ex{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.ex span{background:#fff;border:2px solid var(--line);border-radius:999px;padding:3px 12px;font-weight:800}
+.note{background:var(--redbg);border-radius:12px;padding:8px 12px;margin-top:8px;font-weight:600}
+.sound{width:100%;border-collapse:collapse;margin:6px 0}
+.sound td{border:2px solid var(--line);padding:8px 10px;vertical-align:top}
+.sound td:first-child{font-weight:900;white-space:nowrap}
+.steps{margin:6px 0 0;padding-left:22px}
+.steps li{margin:4px 0}
+.lesson{background:var(--yellow);border:3px solid #f2b94b;border-radius:18px;padding:14px 18px;margin:16px auto;max-width:760px;text-align:left}
+.lesson h3{margin:0 0 6px}
+.lesson ul{margin:6px 0 10px;padding-left:22px;line-height:1.55}
+.practice{margin-top:8px;border:0;border-radius:12px;background:var(--blue);color:#fff;font-weight:850;padding:8px 14px;min-height:44px}
+body.modal{overflow:hidden}
+@media(max-width:620px){.tool{flex:1;padding:8px 8px;font-size:.95rem}}
+@media(max-width:620px){main{padding:8px 10px 20px}.tabs{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.tab{min-height:62px}.panel{padding:15px;min-height:470px}.choice{min-height:72px}.sortrow{grid-template-columns:1fr}.bucket{min-height:90px}}
+</style>
+</head>
+<body>
+<canvas id="confettiCanvas"></canvas>
+<header>
+<h1>La aventura de la J y la G</h1>
+<p>Cuatro retos para leer, pensar y practicar con el lápiz.</p>
+</header>
+<main>
+<div class="toolbar">
+<button class="tool" id="homeBtn" style="display:none">🏠 Inicio</button>
+<button class="tool guide" id="guideBtn">📖 Guía de la J y la G</button>
+</div>
+<nav class="tabs" id="tabNav" aria-label="Tipos de ejercicio">
+<button class="tab active" data-mode="choose">1. Elige bien</button>
+<button class="tab" data-mode="complete">2. Completa</button>
+<button class="tab" data-mode="sort">3. Clasifica</button>
+<button class="tab" data-mode="write">4. Escribe</button>
+</nav>
+<section class="panel">
+<div class="topline" id="topline">
+ <span class="tag" id="modeTag">Elige la palabra correcta</span>
+ <span class="rule-tag" id="ruleTag">Todas las palabras</span>
+ <span class="score" id="score">⭐ 0</span>
+</div>
+<div id="exercise"><div class="nojs">Cargando… (si ves este mensaje mucho rato, abre la página con Chrome o Safari).</div></div>
+<div class="feedback" id="feedback" aria-live="polite"></div>
+<div class="actions" id="actions"></div>
+<div class="rule" id="generalRule"></div>
+</section>
+</main>
+
+<div class="overlay" id="guideOverlay">
+ <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="guideTitle">
+  <div class="sheet-head"><h2 id="guideTitle">📖 Guía de la J y la G</h2><button class="close" id="guideClose">✕ Cerrar</button></div>
+  <div class="sheet-body" id="guideBody"></div>
+ </div>
+</div>
+
+<script>
+"use strict";
+const $ = id => document.getElementById(id);
+
+/* ---------- Sonido (se crea solo al usarlo y nunca rompe la página) ---------- */
+let audioCtx = null;
+function getAudio(){
+  if (audioCtx) return audioCtx;
+  try { const AC = window.AudioContext || window.webkitAudioContext; if (AC) audioCtx = new AC(); } catch(e){}
+  return audioCtx;
+}
+function playSound(type){
+  try{
+    const ctx = getAudio(); if (!ctx) return;
+    if (ctx.state === "suspended") ctx.resume();
+    const t = ctx.currentTime, osc = ctx.createOscillator(), gain = ctx.createGain();
+    osc.connect(gain); gain.connect(ctx.destination);
+    if (type === "good"){
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(523.25, t);
+      osc.frequency.exponentialRampToValueAtTime(659.25, t + .15);
+      osc.frequency.exponentialRampToValueAtTime(783.99, t + .3);
+      gain.gain.setValueAtTime(.15, t); gain.gain.exponentialRampToValueAtTime(.01, t + .4);
+      osc.start(t); osc.stop(t + .4);
+    } else {
+      osc.type = "triangle";
+      osc.frequency.setValueAtTime(260, t);
+      osc.frequency.linearRampToValueAtTime(170, t + .25);
+      gain.gain.setValueAtTime(.12, t); gain.gain.exponentialRampToValueAtTime(.01, t + .3);
+      osc.start(t); osc.stop(t + .3);
+    }
+  }catch(e){}
+}
+
+/* ---------- Confeti ---------- */
+let confettiRun = 0;
+function triggerConfetti(){
+  try{
+    const canvas = $("confettiCanvas"), ctx = canvas.getContext("2d");
+    if (!ctx) return;
+    canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+    const id = ++confettiRun, colors = ["#496fe5","#168467","#f2b94b","#b84d36"];
+    const ps = Array.from({length:50}, () => ({
+      x: Math.random()*canvas.width, y: Math.random()*canvas.height*.4,
+      r: Math.random()*6+4, dx: Math.random()*4-2, dy: Math.random()*3+2,
+      color: colors[Math.floor(Math.random()*4)]
+    }));
+    let ticks = 0;
+    (function draw(){
+      if (id !== confettiRun) return;
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      ps.forEach(p => { ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2); ctx.fillStyle = p.color; ctx.fill(); p.x += p.dx; p.y += p.dy; });
+      if (++ticks < 70) requestAnimationFrame(draw); else ctx.clearRect(0,0,canvas.width,canvas.height);
+    })();
+  }catch(e){}
+}
+
+/* ---------- Voz ---------- */
+function speakWord(text){
+  try{
+    if (!("speechSynthesis" in window)) return false;
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = "es-ES"; u.rate = .8;
+    const v = (speechSynthesis.getVoices() || []).find(v => v.lang && v.lang.toLowerCase().startsWith("es"));
+    if (v) u.voice = v;
+    speechSynthesis.speak(u);
+    return true;
+  }catch(e){ return false; }
+}
+
+/* ---------- Niveles y reglas ---------- */
+const LEVELS = [
+  {id:"all",  icon:"🌟", title:"Repaso general", desc:"Mezcla todas las palabras para un reto completo.", tag:"Todas las palabras",
+   rule:"El sonido de la J se escribe con <b>j</b> (jardín, viaje) o con <b>g</b> delante de <b>e, i</b> (gesto, gente). ¡Hay que fijarse en cada palabra!"},
+  {id:"finj", icon:"🚗", title:"El club del -AJE y -EJE", desc:"viaje, patinaje, garaje, traje, eje… ¡todas con J!", tag:"-aje / -eje / -jero",
+   rule:"Casi todas las palabras que terminan en <b>-aje</b> o <b>-eje</b> llevan <b>J</b> (viaje, garaje, eje). También <b>-jero</b> y <b>-jera</b> (mensajero)."},
+  {id:"geo",  icon:"🌍", title:"Palabras con GEO-", desc:"geografía, geología, geometría… ¡la Tierra va con G!", tag:"geo-",
+   rule:"Todo lo que tiene que ver con la Tierra (<b>geo</b>) se escribe con <b>G</b>: geografía, geología."},
+  {id:"fing", icon:"🏫", title:"Terminan en -gio, -gia, -igen", desc:"colegio, magia, origen, imagen… ¡todas con G!", tag:"-gio / -gia / -igen / -gico",
+   rule:"Las palabras que acaban en <b>-gio</b>, <b>-gia</b>, <b>-gía</b>, <b>-gico</b> y <b>-igen</b> se escriben con <b>G</b>."},
+  {id:"verb", icon:"🛠️", title:"Verbos en -ger y -gir", desc:"recoger, elegir, corregir… y las excepciones tejer y crujir", tag:"Verbos y derivados",
+   rule:"Los verbos acabados en <b>-ger</b> y <b>-gir</b> llevan <b>G</b> (recoger, elegir, corregir). Las únicas excepciones que hay que memorizar: <b>tejer</b> y <b>crujir</b>."},
+  {id:"jou",  icon:"🐰", title:"Ja, jo, ju", desc:"jardín, conejo, juguete, rojo…", tag:"ja / jo / ju",
+   rule:"Delante de <b>a, o, u</b> el sonido J se escribe siempre con <b>J</b>: <b>ja, jo, ju</b>."},
+  {id:"memo", icon:"🔍", title:"Reto je/ge y ji/gi", desc:"jirafa, tijeras, gente, gigante… ¡a fijarse bien!", tag:"je / ge / ji / gi",
+   rule:"Delante de <b>e, i</b> no hay una regla fácil: hay que <b>aprender cada palabra</b>. Leerlas y escribirlas mucho ayuda."}
+];
+
+/* ---------- Banco de palabras: [palabra, letra del sonido J, nivel, explicación opcional] ---------- */
+const E_J_FIN  = "Casi todas las palabras acabadas en -aje, -eje, -jero y -jera se escriben con J.";
+const E_GEO = "Las palabras que empiezan por geo- (la Tierra) se escriben con G.";
+const E_G_FIN  = "Las palabras acabadas en -gio, -gia, -gía, -gión y -gico se escriben con G.";
+const E_G_VERB = "Los verbos acabados en -ger y -gir se escriben con G. (Excepciones: tejer y crujir)";
+const E_JI = "Se escribe con J. Es de las que hay que aprenderse: ¡léela y escríbela varias veces!";
+const E_GE = "Se escribe con G. Es de las que hay que aprenderse: ¡léela y escríbela varias veces!";
+const E_JOU = "Delante de a, o, u el sonido J se escribe con J: ja, jo, ju.";
+
+const RAW = [
+  ["garaje","j","finj",E_J_FIN],["viaje","j","finj",E_J_FIN],["equipaje","j","finj",E_J_FIN],
+  ["lenguaje","j","finj",E_J_FIN],["mensaje","j","finj",E_J_FIN],["paisaje","j","finj",E_J_FIN],
+  ["extranjero","j","finj",E_J_FIN],["mensajero","j","finj",E_J_FIN],["viajero","j","finj",E_J_FIN],
+  ["cajero","j","finj",E_J_FIN],["patinaje","j","finj",E_J_FIN],["masaje","j","finj",E_J_FIN],["personaje","j","finj",E_J_FIN],["aprendizaje","j","finj",E_J_FIN],
+  ["coraje","j","finj",E_J_FIN],["salvaje","j","finj",E_J_FIN],["cajera","j","finj",E_J_FIN],["traje","j","finj",E_J_FIN],
+  ["eje","j","finj",E_J_FIN],["hereje","j","finj",E_J_FIN],
+  ["geografía","g","geo",E_GEO],["geología","g","geo",E_GEO],["geometría","g","geo",E_GEO],["geógrafo","g","geo",E_GEO],["geólogo","g","geo",E_GEO],["pasajero","j","finj",E_J_FIN],["cerrajero","j","finj",E_J_FIN],
+
+  ["colegio","g","fing",E_G_FIN],["magia","g","fing",E_G_FIN],["energía","g","fing",E_G_FIN],
+  ["biología","g","fing",E_G_FIN],["mágico","g","fing",E_G_FIN],["lógica","g","fing",E_G_FIN],["región","g","fing",E_G_FIN],["alergia","g","fing",E_G_FIN],
+  ["refugio","g","fing",E_G_FIN],["mágica","g","fing",E_G_FIN],["zoología","g","fing",E_G_FIN],
+  ["origen","g","fing","Las palabras acabadas en -igen se escriben con G (origen, imagen, virgen)."],
+  ["imagen","g","fing","Las palabras acabadas en -igen se escriben con G (origen, imagen, virgen)."],
+  ["virgen","g","fing","Las palabras acabadas en -igen se escriben con G (origen, imagen, virgen)."],
+
+  ["coger","g","verb",E_G_VERB],["recoger","g","verb",E_G_VERB],["fingir","g","verb",E_G_VERB],["encoger","g","verb",E_G_VERB],["surgir","g","verb",E_G_VERB],
+  ["viajar","j","verb","Viene de «viaje», que se escribe con J: viaje, viajar, viajero."],["corregir","g","verb",E_G_VERB],
+  ["crujir","j","verb","¡Es una excepción! Aunque acaba en -ir, «crujir» se escribe con J."],["escoger","g","verb",E_G_VERB],["proteger","g","verb",E_G_VERB],
+  ["elegir","g","verb",E_G_VERB],["dirigir","g","verb",E_G_VERB],["exigir","g","verb",E_G_VERB],
+  ["recogedor","g","verb","Viene del verbo «recoger», que lleva G."],
+  ["tejer","j","verb","¡Es una excepción! Aunque acaba en -er, «tejer» se escribe con J."],
+  ["tejido","j","verb","Viene del verbo «tejer», que se escribe con J."],
+  ["trabajo","j","verb","Viene del verbo «trabajar», que se escribe con J."],
+  ["dibujo","j","verb","Viene del verbo «dibujar», que se escribe con J."],
+  ["empujar","j","verb","Los verbos que ya llevan J en -ar mantienen la J: empujar, empujo, empuje."],
+
+  ["jardín","j","jou",E_JOU],["conejo","j","jou",E_JOU],["juguete","j","jou",E_JOU],
+  ["agujero","j","jou",E_JOU],["naranja","j","jou",E_JOU],["rojo","j","jou",E_JOU],
+  ["jabón","j","jou",E_JOU],["ojo","j","jou",E_JOU],["hoja","j","jou",E_JOU],["caja","j","jou",E_JOU],
+  ["pájaro","j","jou",E_JOU],["juego","j","jou",E_JOU],["bruja","j","jou",E_JOU],["granja","j","jou",E_JOU],
+  ["reloj","j","jou","Al final de la palabra, el sonido J se escribe con J: reloj."],["juez","j","jou",E_JOU],["joya","j","jou",E_JOU],["abeja","j","jou",E_JOU],
+
+  ["jinete","j","memo",E_JI],["jirafa","j","memo",E_JI],["tijeras","j","memo",E_JI],
+  ["cojín","j","memo",E_JI],["berenjena","j","memo",E_JI],["perejil","j","memo",E_JI],["ejemplo","j","memo",E_JI],
+  ["jefe","j","memo",E_JI],["mejilla","j","memo",E_JI],["mujer","j","memo",E_JI],["bandeja","j","memo",E_JI],["ejercicio","j","memo",E_JI],
+  ["ángel","g","memo",E_GE],["gemelos","g","memo",E_GE],["ingeniero","g","memo",E_GE],["gimnasio","g","memo",E_GE],
+  ["gente","g","memo",E_GE],["gigante","g","memo",E_GE],["gesto","g","memo",E_GE],
+  ["genio","g","memo",E_GE],["general","g","memo",E_GE],["girasol","g","memo",E_GE],
+  ["página","g","memo",E_GE],["agenda","g","memo",E_GE]
+];
+const BAD = {j:"g", g:"j"};
+const words = RAW.map(([w,l,cat,exp]) => ({w, l, bad:BAD[l], cat, exp}));
+
+/* ---------- Estado ---------- */
+let onHome = true, activeCategory = "all", mode = "choose", score = 0, deck = [], current = null,
+    locked = false, sortRound = [], placed = 0, drawActive = false, lastPoint = null;
+
+const filterWords = () => activeCategory === "all" ? words : words.filter(x => x.cat === activeCategory);
+function shuffle(a){ const b=[...a]; for(let i=b.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [b[i],b[j]]=[b[j],b[i]]; } return b; }
+function pick(){ if(!deck.length) deck = shuffle(filterWords()); current = deck.pop(); locked = false; }
+function say(msg, kind=""){ $("feedback").textContent = msg; $("feedback").className = "feedback " + kind; }
+function updateScore(){ $("score").textContent = "⭐ " + score; }
+function next(){ pick(); render(); }
+function setActions(items){
+  const box = $("actions"); box.replaceChildren();
+  items.forEach(it => {
+    const b = document.createElement("button");
+    b.className = "action" + (it.secondary ? " secondary" : "");
+    b.textContent = it.label; b.onclick = it.fn; box.appendChild(b);
+  });
+  if (!onHome){                       // en los ejercicios: Guía siempre al lado de Inicio
+    const g = document.createElement("button");
+    g.className = "action guide"; g.textContent = "📖 Guía";
+    g.onclick = () => openGuide(); box.appendChild(g);
+  }
+}
+function showExplain(container, text, kind){
+  const old = container.querySelector(".explain"); if (old) old.remove();
+  const d = document.createElement("div");
+  d.className = "explain " + kind;
+  d.innerHTML = "<strong>💡 " + (kind==="bad" ? "¿Por qué?" : "Recuerda") + "</strong> " + text;
+  container.appendChild(d);
+}
+function changeLevelBtn(){ return {label:"🏠 Inicio", secondary:true, fn:showLevelSelector}; }
+function levelInfo(){ return LEVELS.find(l => l.id === activeCategory) || LEVELS[0]; }
+
+/* ---------- Pantalla de niveles ---------- */
+function updateToolbar(){ $("homeBtn").style.display = onHome ? "none" : ""; }
+function showLevelSelector(){
+  try{ speechSynthesis.cancel(); }catch(e){}
+  onHome = true; locked = false; drawActive = false; updateToolbar();
+  $("tabNav").style.display = "none";
+  $("topline").style.display = "none";
+  $("generalRule").style.display = "none";
+  say(""); $("actions").replaceChildren();
+  $("exercise").innerHTML = '<div class="selector-screen"><h2>¡Bienvenida a la aventura!</h2>' +
+    '<div class="lesson"><h3>📖 Mini-lección: ¿con J o con G?</h3>' +
+    '<p style="margin:0">El sonido «je, ji» se escribe de dos formas, pero tenemos trucos para acertar:</p><ul>' +
+    '<li>🚗 <b>Club del -AJE y -EJE:</b> casi siempre con <b>J</b> (viaje, garaje, eje).</li>' +
+    '<li>🌍 <b>GEO- = la Tierra:</b> siempre con <b>G</b> (geografía, geología).</li>' +
+    '<li>🏃 <b>Verbos en -GER y -GIR:</b> con <b>G</b> (recoger, elegir). ¡Solo <i>tejer</i> y <i>crujir</i> llevan J!</li></ul>' +
+    '<button class="practice" id="openGuide2">📖 Ver la guía completa</button></div>' +
+    '<p><b>Ahora elige qué quieres practicar:</b></p><div class="level-grid" id="levelGrid"></div></div>';
+  $("openGuide2").onclick = openGuide;
+  LEVELS.forEach(l => {
+    const b = document.createElement("button");
+    b.className = "level-card";
+    b.innerHTML = "<h3>" + l.icon + " " + l.title + "</h3><p>" + l.desc + "</p>";
+    b.onclick = () => selectLevel(l.id);
+    $("levelGrid").appendChild(b);
+  });
+}
+function selectLevel(id){
+  onHome = false; updateToolbar();
+  activeCategory = id; deck = [];
+  const l = levelInfo();
+  $("ruleTag").textContent = l.tag;
+  $("generalRule").innerHTML = "<strong>Truco:</strong> " + l.rule;
+  $("tabNav").style.display = "grid";
+  $("topline").style.display = "flex";
+  $("generalRule").style.display = "block";
+  setMode("choose");
+}
+function setMode(m){
+  mode = m;
+  document.querySelectorAll(".tab").forEach(b => b.classList.toggle("active", b.dataset.mode === m));
+  pick(); render();
+}
+document.querySelectorAll(".tab").forEach(b => b.addEventListener("click", () => setMode(b.dataset.mode)));
+
+function render(){
+  updateScore(); say(""); $("actions").replaceChildren();
+  const names = {choose:"Elige la palabra correcta", complete:"Completa la palabra", sort:"Clasifica: ¿J o G?", write:"Dictado con el lápiz"};
+  $("modeTag").textContent = names[mode];
+  ({choose:renderChoose, complete:renderComplete, sort:renderSort, write:renderWrite})[mode]();
+}
+
+/* ---------- Respuestas ---------- */
+function answerButtons(container, options, correct, successText){
+  options.forEach(text => {
+    const b = document.createElement("button");
+    b.className = "choice"; b.textContent = text;
+    b.onclick = () => {
+      if (locked) return; locked = true;
+      if (text === correct){
+        b.classList.add("correct"); score++; playSound("good"); triggerConfetti();
+        say(successText, "good");
+        if (current.exp) showExplain(container.parentNode, current.exp, "good");
+      } else {
+        b.classList.add("wrong"); playSound("bad");
+        say("La respuesta correcta es: " + correct, "bad");
+        container.querySelectorAll("button").forEach(x => { if (x.textContent === correct) x.classList.add("correct"); });
+        if (current.exp) showExplain(container.parentNode, current.exp, "bad");
+      }
+      updateScore();
+      setActions([{label:"Siguiente palabra", fn:next}, changeLevelBtn()]);
+    };
+    container.appendChild(b);
+  });
+}
+function gapWord(item){ const i = item.w.indexOf(item.l); return item.w.slice(0,i) + "_" + item.w.slice(i+1); }
+function fillWord(item, L){ const i = item.w.indexOf(item.l); return item.w.slice(0,i) + L + item.w.slice(i+1); }
+function wrongWord(item){
+  const i = item.w.indexOf(item.l);
+  return i < 0 ? item.w : item.w.slice(0,i) + item.bad + item.w.slice(i+1);
+}
+
+function renderChoose(){
+  $("exercise").innerHTML = '<div class="prompt">¿Cuál de estas palabras está bien escrita?</div>' +
+    '<div class="subprompt">Fíjate en la letra que produce el sonido J.</div><div class="options" id="options"></div>';
+  answerButtons($("options"), shuffle([current.w, wrongWord(current)]), current.w, "¡Muy bien! ¡Punto para ti!");
+  setActions([
+    {label:"Pista", secondary:true, fn:() => say("Lee la palabra despacio y fíjate en je/ge o ji/gi.")},
+    changeLevelBtn()
+  ]);
+}
+
+function renderComplete(){
+  const i = current.w.indexOf(current.l);
+  const shown = current.w.slice(0,i) + "_" + current.w.slice(i+1);
+  $("exercise").innerHTML = '<div class="prompt">¿Qué letra falta?</div><div class="subprompt">Elige j o g para completar la palabra.</div>' +
+    '<div class="bigword">' + shown + '</div><div class="options" id="options"></div>';
+  answerButtons($("options"), ["j","g"], current.l, current.w + " está bien escrita.");
+  setActions([
+    {label:"🔊 Escuchar", secondary:true, fn:() => speakWord(current.w)},
+    changeLevelBtn()
+  ]);
+}
+
+/* ---------- Clasificar: toca una palabra y luego toca la caja ---------- */
+function renderSort(){
+  let pool = shuffle(filterWords()).slice(0, 6); placed = 0;
+  ["j","g"].forEach(L => {            // siempre al menos 2 palabras de cada letra
+    while (pool.filter(x => x.l === L).length < 2){
+      const extra = shuffle(words.filter(x => x.l === L && !pool.includes(x)))[0];
+      let idx = -1; for (let k = pool.length-1; k >= 0; k--) if (pool[k].l === BAD[L]) { idx = k; break; }
+      if (!extra) break;
+      if (pool.length < 6) pool.push(extra); else if (idx >= 0) pool[idx] = extra; else break;
+    }
+  });
+  sortRound = shuffle(pool);
+  $("exercise").innerHTML = '<div class="prompt">¿Qué letra falta? Colócala en su caja</div>' +
+    '<div class="subprompt">Toca una palabra con hueco y luego toca la caja de la letra que le falta (J o G). Si te equivocas, toca la palabra para sacarla.</div>' +
+    '<div class="sortwords" id="source"></div>' +
+    '<div class="sortrow">' +
+    '<div class="bucket" id="boxj" role="button" tabindex="0"><h3>Falta la J</h3><div id="bucketj"></div></div>' +
+    '<div class="bucket" id="boxg" role="button" tabindex="0"><h3>Falta la G</h3><div id="bucketg"></div></div></div>';
+  let selected = null;
+  const setReady = on => ["boxj","boxg"].forEach(id => $(id).classList.toggle("ready", on));
+  sortRound.forEach((item, index) => {
+    const b = document.createElement("button");
+    b.className = "chip"; b.textContent = gapWord(item); b.dataset.index = index;
+    b.onclick = e => {
+      if (locked) return;
+      e.stopPropagation();
+      if (b.dataset.placed){            // devolver a la zona de palabras
+        delete b.dataset.placed; placed--; b.textContent = gapWord(item); $("source").appendChild(b); say(""); return;
+      }
+      document.querySelectorAll("#source .chip").forEach(x => x.classList.remove("selected"));
+      b.classList.add("selected"); selected = b; setReady(true);
+      say("Ahora toca la caja J o la caja G.");
+    };
+    $("source").appendChild(b);
+  });
+  const place = letter => {
+    if (!selected || locked) return;
+    selected.dataset.placed = letter; selected.classList.remove("selected");
+    selected.textContent = fillWord(sortRound[Number(selected.dataset.index)], letter);
+    $(letter === "j" ? "bucketj" : "bucketg").appendChild(selected);
+    placed++; selected = null; setReady(false); say("");
+  };
+  [["boxj","j"],["boxg","g"]].forEach(([id,l]) => {
+    $(id).onclick = () => place(l);
+    $(id).onkeydown = e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); place(l); } };
+  });
+  setActions([{label:"Comprobar", fn:checkSort}, changeLevelBtn()]);
+}
+
+function checkSort(){
+  if (locked) return;
+  if (placed < sortRound.length){ say("Coloca todas las palabras antes de comprobar.", "bad"); return; }
+  locked = true;
+  let good = 0, firstWrong = null;
+  document.querySelectorAll(".bucket .chip").forEach(b => {
+    const item = sortRound[Number(b.dataset.index)];
+    b.textContent = item.w;                       // ahora se ve la palabra correcta
+    if (b.dataset.placed === item.l){ good++; b.classList.add("correct"); }
+    else { b.classList.add("wrong"); if (!firstWrong) firstWrong = item; }
+  });
+  score += good; updateScore();
+  if (good === sortRound.length){
+    playSound("good"); triggerConfetti(); say("¡Perfecto! Todas están bien colocadas.", "good");
+  } else {
+    playSound("bad"); say(good + " de " + sortRound.length + " correctas. Verde = bien. En las rojas ves la palabra bien escrita.", "bad");
+    if (firstWrong && firstWrong.exp) showExplain($("exercise"), "<b>" + firstWrong.w + "</b>: " + firstWrong.exp, "bad");
+  }
+  setActions([{label:"Nueva ronda", fn:next}, changeLevelBtn()]);
+}
+
+/* ---------- Escribir: dictado con el dedo o el lápiz ---------- */
+function renderWrite(){
+  $("exercise").innerHTML =
+    '<div class="prompt">Escucha y escribe la palabra</div>' +
+    '<div class="subprompt">Pulsa el altavoz para oír la palabra y escríbela en el recuadro.</div>' +
+    '<div style="text-align:center;margin:15px 0;"><button class="action" id="speakBtn" style="font-size:1.2rem;padding:12px 24px;">🔊 Escuchar palabra</button></div>' +
+    '<div class="canvaswrap"><div class="guide" id="guide">' + current.w + '</div>' +
+    '<canvas id="pad" width="1000" height="260" aria-label="Zona de escritura"></canvas></div>' +
+    '<p class="hint">Puedes borrar y repetir las veces que quieras.</p><div id="modelContainer"></div>';
+
+  const canSpeak = () => {
+    if (speakWord(current.w)) return;
+    say("Tu tablet no puede leer en voz alta. La palabra es: " + current.w, "bad");
+  };
+  $("speakBtn").onclick = canSpeak;
+  speakWord(current.w);
+
+  const c = $("pad"), ctx = c.getContext("2d");
+  ctx.lineWidth = 8; ctx.lineCap = "round"; ctx.lineJoin = "round"; ctx.strokeStyle = "#263451";
+  const point = e => { const r = c.getBoundingClientRect(); return {x:(e.clientX-r.left)*c.width/r.width, y:(e.clientY-r.top)*c.height/r.height}; };
+  c.addEventListener("pointerdown", e => { e.preventDefault(); drawActive = true; lastPoint = point(e); try{ c.setPointerCapture(e.pointerId); }catch(_){}
+    ctx.beginPath(); ctx.moveTo(lastPoint.x,lastPoint.y); ctx.lineTo(lastPoint.x+.1,lastPoint.y); ctx.stroke(); });
+  c.addEventListener("pointermove", e => { if (!drawActive) return; e.preventDefault(); const p = point(e);
+    ctx.beginPath(); ctx.moveTo(lastPoint.x,lastPoint.y); ctx.lineTo(p.x,p.y); ctx.stroke(); lastPoint = p; });
+  const stop = () => { drawActive = false; lastPoint = null; };
+  c.addEventListener("pointerup", stop); c.addEventListener("pointercancel", stop);
+
+  const guideBtn = {label:"👀 Ver palabra de ayuda", secondary:true, fn:() => {
+    $("guide").classList.toggle("on");
+  }};
+  setActions([
+    {label:"Borrar", secondary:true, fn:() => ctx.clearRect(0,0,c.width,c.height)},
+    {label:"🔊 Repetir", secondary:true, fn:canSpeak},
+    guideBtn, changeLevelBtn(),
+    {label:"Terminado", fn:() => {
+      if (locked) return; locked = true;
+      score++; playSound("good"); triggerConfetti(); updateScore();
+      $("guide").classList.remove("on");
+      $("modelContainer").innerHTML = '<div class="model-box"><div style="font-size:1rem;color:#66728a;margin-bottom:5px;">Compara tu palabra con el modelo:</div>' +
+        '<div class="model-word">' + current.w + '</div></div>';
+      if (current.exp) showExplain($("modelContainer"), current.exp, "good");
+      say("¡Buen trabajo! Mira si se parecen.", "good");
+      setActions([{label:"Siguiente palabra", fn:next}, changeLevelBtn()]);
+    }}
+  ]);
+}
+
+/* ---------- Guía emergente ---------- */
+const GUIDE_RULES = [
+  {lv:"finj", c:"j", ic:"🚗", t:"El club del -AJE y -EJE", l:"J",
+   p:"Casi todas las palabras que terminan en <b>-aje</b> o <b>-eje</b> van con <b>J</b>. También las que acaban en <b>-jero</b> y <b>-jera</b>.",
+   ex:["viaje","patinaje","garaje","traje","eje","mensajero"]},
+  {lv:"geo", c:"g", ic:"🌍", t:"Las palabras que empiezan con GEO-", l:"G",
+   p:"<b>Geo</b> significa «Tierra». Todo lo que tenga que ver con la Tierra va con <b>G</b>.",
+   ex:["geografía","geología","geometría","geógrafo"]},
+  {lv:"verb", c:"g", ic:"🏃", t:"Los verbos en -GER y -GIR", l:"G",
+   p:"Los verbos de acción terminados en <b>-ger</b> y <b>-gir</b> casi siempre van con <b>G</b>.",
+   ex:["recoger","elegir","corregir","proteger","dirigir"],
+   note:"⚠️ Las únicas excepciones que hay que memorizar: <b>tejer</b> y <b>crujir</b> (con J)."},
+  {lv:"fing", c:"g", ic:"🏫", t:"Terminan en -GIO, -GIA, -GÍA, -IGEN", l:"G",
+   p:"Estas terminaciones se escriben con <b>G</b>.", ex:["colegio","magia","energía","origen","imagen"]},
+  {lv:"jou", c:"j", ic:"🐰", t:"JA, JO, JU", l:"J",
+   p:"Delante de <b>a, o, u</b> el sonido J casi siempre se escribe con <b>J</b>.", ex:["jardín","conejo","juguete","rojo"]},
+  {lv:"memo", c:"j", ic:"🔍", t:"¡Hay que aprendérselas!", l:"J/G",
+   p:"Con <b>je, ji</b> / <b>ge, gi</b> hay palabras sin regla fácil. Se aprenden leyéndolas y escribiéndolas muchas veces.",
+   ex:["jirafa","tijeras","berenjena","gente","gigante","página"]}
+];
+function buildGuide(){
+  const rules = GUIDE_RULES.map(r =>
+    '<div class="gcard ' + r.c + '" data-lv="' + r.lv + '"><h4>' + r.ic + ' <span class="lt ' + r.c + '">' + r.l + '</span> ' + r.t + '</h4>' +
+    '<p>' + r.p + '</p><div class="ex">' + r.ex.map(x => '<span>' + x + '</span>').join("") + '</div>' +
+    (r.note ? '<div class="note">' + r.note + '</div>' : '') +
+    '<button class="practice" data-practice="' + r.lv + '" style="display:none">🎯 Practicar esta regla</button></div>').join("");
+  $("guideBody").innerHTML =
+    '<h3>👂 Cómo suena cada letra</h3>' +
+    '<table class="sound"><tr><td>ga, go, gu</td><td>Suena <b>fuerte y suave</b> como en <i>gato, gota, gusano</i>.</td></tr>' +
+    '<tr><td>gue, gui</td><td>La <b>u</b> no se oye: <i>guerra, guitarra</i>. Si se oye la u, lleva diéresis: <i>pingüino, cigüeña</i>.</td></tr>' +
+    '<tr><td>ge, gi · je, ji</td><td>¡Suenan igual! Como en <i>gente, gigante</i> y <i>jefe, jirafa</i>. Por eso hay que fijarse.</td></tr>' +
+    '<tr><td>ja, jo, ju</td><td>Siempre con <b>j</b>: <i>jardín, joya, juego</i>.</td></tr></table>' +
+    '<h3>🏆 Las reglas del club</h3>' + rules +
+    '<h3>🧠 Truco: hazte 3 preguntas</h3>' +
+    '<ol class="steps"><li>¿Termina en <b>-aje</b> o <b>-eje</b>? → <b>J</b></li>' +
+    '<li>¿Empieza por <b>geo-</b> o es un verbo en <b>-ger / -gir</b>? → <b>G</b></li>' +
+    '<li>Si no, ¿es de la familia de otra palabra? <i>viaje → viajero</i>, <i>geografía → geógrafo</i>. ¡Se parecen!</li></ol>' +
+    '<h3>✍️ Consejo</h3><p>Cuando dudes, escribe la palabra tres veces con el dedo. ¡La mano también aprende!</p>';
+  $("guideBody").querySelectorAll("[data-practice]").forEach(b => b.onclick = () => { closeGuide(); selectLevel(b.dataset.practice); });
+}
+let lastFocus = null;
+function openGuide(){
+  lastFocus = document.activeElement;
+  document.querySelectorAll("#guideBody .gcard").forEach(c => {
+    c.classList.toggle("current", !onHome && c.dataset.lv === activeCategory);
+  });
+  document.querySelectorAll("#guideBody [data-practice]").forEach(b => b.style.display = onHome ? "" : "none");
+  $("guideOverlay").classList.add("on");
+  document.body.classList.add("modal");
+  $("guideBody").scrollTop = 0;
+  const cur = $("guideBody").querySelector(".gcard.current");
+  if (cur) cur.scrollIntoView({block:"center"});
+  $("guideClose").focus();
+}
+function closeGuide(){
+  $("guideOverlay").classList.remove("on");
+  document.body.classList.remove("modal");
+  if (lastFocus && lastFocus.focus) try{ lastFocus.focus(); }catch(e){}
+}
+buildGuide();
+$("guideBtn").onclick = openGuide;
+$("guideClose").onclick = closeGuide;
+$("guideOverlay").addEventListener("click", e => { if (e.target === $("guideOverlay")) closeGuide(); });
+document.addEventListener("keydown", e => { if (e.key === "Escape" && $("guideOverlay").classList.contains("on")) closeGuide(); });
+$("homeBtn").onclick = showLevelSelector;
+
+showLevelSelector();
+</script>
+</body>
+</html>
