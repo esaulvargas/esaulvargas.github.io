@@ -36,6 +36,17 @@ canvas{width:100%;height:280px;background:#fff;border:4px dashed var(--g);border
 .mb h3{color:var(--g);margin:1em 0 .2em}
 .cf{position:fixed;top:-40px;font-size:30px;animation:f 1.8s linear forwards;z-index:30;pointer-events:none}
 @keyframes f{to{transform:translateY(115vh) rotate(360deg)}}
+main.wide{max-width:1400px}
+.sheet{display:flex;flex-direction:column;gap:10px;align-items:center}
+.words{background:#fff;border:3px solid var(--or);border-radius:16px;padding:8px;display:flex;flex-wrap:wrap;gap:6px;justify-content:center;width:100%}
+.words b{width:100%;text-align:center}
+.words span{background:#fff7dd;border:2px solid var(--or);border-radius:12px;padding:6px 12px;font-size:22px;touch-action:manipulation}
+.words span.x{text-decoration:line-through;opacity:.45}
+.wrap{position:relative;line-height:0;max-width:100%;flex:1;min-width:0}
+.wrap img{max-width:100%;max-height:none;width:100%;display:block;border-radius:10px;border:2px solid #bbb;background:#fff}
+.wrap canvas{position:absolute;left:0;top:0;width:100%;height:100%;border:0;background:transparent}
+.pal button{min-width:56px;padding:6px 14px}
+@media(orientation:landscape) and (min-width:700px){.sheet{flex-direction:row;align-items:flex-start}.words{width:230px;flex-direction:column;flex-wrap:nowrap;align-items:stretch;flex:none;max-height:80vh;overflow:auto;position:sticky;top:76px}.words span{text-align:center}}
 @media(max-width:560px){body{font-size:19px}.two{grid-template-columns:1fr}h1{font-size:28px}}
 @media(prefers-reduced-motion:reduce){.cf{display:none}}
 </style></head><body>
@@ -176,12 +187,18 @@ draw:[
 {p:"Draw a simple skeleton and write three bones.",m:"💀 skull, ribs, backbone, femur",w:"The skeleton holds up our body."},
 {p:"Draw an organ and write which life process it carries out.",m:"Stomach → nutrition · Eye → sensitivity",w:"Each organ helps with a life process."}]
 }];
+/* ===== FICHAS PARA ESCRIBIR ENCIMA: una línea por ficha =====
+ t: id del tema · img: archivo en la carpeta imagenes · title: [inglés, español] · w: lista de palabras */
+const FICHAS=[
+{t:"cuerpo",img:"tema_completar_inside_body.png",title:["Inside our body","Dentro de nuestro cuerpo"],w:["mouth","heart","lung","stomach","intestines","eye","ear","nose","tongue","skin","brain","nerves","bone","muscle"]},
+{t:"cuerpo",img:"tema1_completar_inside_body.png",title:["Inside Body","En nuestro cuerpo"],w:["eye","ear","mouth","nose","tongue","heart","stomach","skin","intestines","lung","brain","nerves","testicle","penis","ovary","vagina","bone","muscle"]}
+];
 TEN.forEach((t,i)=>{t.icon=TES[i].icon;t.pre=TES[i].pre;t.pages=TES[i].pages});
 
 /* ================= CÓDIGO (no hace falta tocarlo) ================= */
 const $=s=>document.querySelector(s);
 const sh=a=>{a=a.slice();for(let i=a.length;i>1;){const j=Math.random()*i|0;i--;[a[i],a[j]]=[a[j],a[i]]}return a};
-const TABS=["quiz","tf","fill","cls","match","order","draw"],TI=["🔘","✅","✏️","📦","🔗","🔢","🎨"];
+const TABS=["quiz","tf","fill","cls","match","order","draw","fichas"],TI=["🔘","✅","✏️","📦","🔗","🔢","🎨","📝"];
 let LG="en";try{LG=localStorage.getItem("lg")=="es"?"es":"en"}catch(e){}
 const U={
 en:{hi:"🔬 Hello, scientist! Let's explore",pk:"Pick a topic, do the exercises and win ⭐. You have ",st:" stars!",lt:"🌱 Mini lesson",
@@ -191,7 +208,7 @@ oops:"Oops, this exercise could not load. Press Next.",good:"🎉 Well done!",ba
 miss:"Missing image ",clear:"🧽 Clear",model:"👀 See model",did:"⭐ I did it!",mod:"🔎 Model: ",comp:"Complete: ",t:"✅ True",f:"❌ False",
 cls:"Tap a word and then the box where it goes.",mt:"Tap one on the left and its partner on the right.",or:"Tap the steps in order.",
 dw:"Drawing and writing help you remember.",bes:"🇪🇸 Spanish",ben:"🇬🇧 Original",
-tabs:["Choose","True/False","Complete","Sort","Match","Order","Draw"],vo:"en-GB"},
+nof:"There are no worksheets for this topic yet.",wd:"✏️ Words",ink:"Pen",er:"🧽 Eraser",ca:"🗑️ Clear all",mi:"Image not found: ",tabs:["Choose","True/False","Complete","Sort","Match","Order","Draw","Worksheets"],vo:"en-GB"},
 es:{hi:"🔬 ¡Hola, científica! Vamos a explorar",pk:"Elige un tema, haz los ejercicios y consigue ⭐. ¡Tienes ",st:" estrellas!",lt:"🌱 Mini-lección",
 lx:"Un <b>ser vivo</b> hace tres cosas: se <b>nutre</b> 🍎, <b>siente</b> 👀 y se <b>reproduce</b> 🐣. ¡Descubre más en cada tema!",
 rev:"🎲 Repaso general",home:"🏠 Inicio",guide:"📖 Guía",listen:"🔊 Escuchar",next:"Siguiente ➡️",none:"Aún no hay ejercicios de este tipo.",
@@ -199,7 +216,7 @@ oops:"Ups, este ejercicio no se pudo cargar. Pulsa Siguiente.",good:"🎉 ¡Muy 
 miss:"Falta la imagen ",clear:"🧽 Borrar",model:"👀 Ver modelo",did:"⭐ ¡Ya lo hice!",mod:"🔎 Modelo: ",comp:"Completa: ",t:"✅ Verdadero",f:"❌ Falso",
 cls:"Toca una palabra y luego la caja donde va.",mt:"Toca uno de la izquierda y su pareja de la derecha.",or:"Toca los pasos en orden.",
 dw:"Dibujar y escribir ayuda a recordar.",bes:"🇪🇸 Español",ben:"🇬🇧 Original",
-tabs:["Elige","V o F","Completa","Clasifica","Relaciona","Ordena","Dibuja"],vo:"es-ES"}};
+nof:"Todavía no hay fichas para este tema.",wd:"✏️ Palabras",ink:"Lápiz",er:"🧽 Goma",ca:"🗑️ Borrar todo",mi:"No se encuentra la imagen: ",tabs:["Elige","V o F","Completa","Clasifica","Relaciona","Ordena","Dibuja","Fichas"],vo:"es-ES"}};
 const u=k=>U[LG][k],TP=()=>LG=="en"?TEN:TES;
 let S={o:null,id:"",tab:"quiz"},pts=0,Q={},cur="",done=false,AC=null;
 function snd(f,d,t){try{AC=AC||new(window.AudioContext||window.webkitAudioContext)();const o=AC.createOscillator(),g=AC.createGain();o.type=t||"sine";o.frequency.value=f;g.gain.value=.07;o.connect(g);g.connect(AC.destination);o.start();g.gain.exponentialRampToValueAtTime(.001,AC.currentTime+d);o.stop(AC.currentTime+d)}catch(e){}}
@@ -216,9 +233,28 @@ function home(){S.o=null;shut();document.documentElement.lang=LG;$("#app").inner
 <div class="lesson"><h2>${u("lt")}</h2><p>${u("lx")}</p></div>
 <div class="cards">${TP().map(t=>`<button class="card" onclick="openT('${t.id}')"><span class="ic">${t.icon}</span><b>${t.title}</b><br>${t.desc}</button>`).join("")}</div>
 <button class="pri" onclick="openT('all')">${u("rev")}</button></main>`}
-function openT(id,tab){S.id=id;S.o=id=="all"?allTopic():TP().find(t=>t.id==id);S.tab=tab||"quiz";shell()}
+function openT(id,tab){S.id=id;S.o=id=="all"?allTopic():TP().find(t=>t.id==id);S.tab=tab||"quiz";S.f=0;shell()}
 function shell(){document.documentElement.lang=LG;$("#app").innerHTML=`<div id="bar"><button onclick="home()">${u("home")}</button><button onclick="guide()">${u("guide")}</button>${lgb()}<b style="margin-left:auto">${S.o.icon} ⭐ <span class="pts">${pts}</span></b></div>
-<main><div class="tabs">${TABS.map((k,i)=>`<button class="${k==S.tab?"pri":""}" onclick="S.tab='${k}';shell()">${TI[i]} ${u("tabs")[i]}</button>`).join("")}</div><div id="ex"></div></main>`;loadEx()}
+<main class="${S.tab=="fichas"?"wide":""}"><div class="tabs">${TABS.map((k,i)=>k=="fichas"&&!FL().length?"":`<button class="${k==S.tab?"pri":""}" onclick="S.tab='${k}';shell()">${TI[i]} ${u("tabs")[i]}</button>`).join("")}</div><div id="ex"></div></main>`;S.tab=="fichas"?loadFichas():loadEx()}
+const FL=()=>FICHAS.filter(f=>S.id=="all"||f.t==S.id);
+function loadFichas(){const L=FL(),ex=$("#ex");if(!L.length){ex.innerHTML="<p>"+u("nof")+"</p>";return}
+const f=L[Math.min(S.f||0,L.length-1)],ti=f.title?f.title[LG=="en"?0:1]:f.img;
+ex.innerHTML=(L.length>1?`<div class="row">${L.map((g,i)=>`<button class="${g===f?"pri":""}" onclick="S.f=${i};loadFichas()">${g.title?g.title[LG=="en"?0:1]:g.img}</button>`).join("")}</div>`:"")+
+`<h2>${ti}</h2><div class="sheet"><div class="words"><b>${u("wd")}</b>${f.w.map(w=>`<span>${w}</span>`).join("")}</div><div class="wrap"><img alt="${ti}" src="imagenes/${f.img}"><canvas></canvas></div></div>
+<div class="row pal"><button data-c="#1d4ed8" style="color:#1d4ed8">✏️ ${u("ink")}</button><button data-c="#d02020" style="color:#d02020">✏️</button><button data-c="#111" style="color:#111">✏️</button><button data-c="e">${u("er")}</button><button id="ca">${u("ca")}</button></div>
+<div class="row"><button onclick="home()">${u("home")}</button><button onclick="guide()">${u("guide")}</button></div>`;
+ex.querySelectorAll(".words span").forEach(e=>e.onclick=()=>e.classList.toggle("x"));
+const im=$(".wrap img"),c=$(".wrap canvas"),x=c.getContext("2d");let col="#1d4ed8",d=false,lp=null,pen=false;
+im.onerror=()=>{$(".wrap").innerHTML="<p style='line-height:1.4'>"+u("mi")+"<code>imagenes/"+f.img+"</code></p>"};
+const fit=()=>{const w=im.clientWidth,h=im.clientHeight;if(!w||!h||(c.width==w&&c.height==h))return;const t=document.createElement("canvas");t.width=c.width;t.height=c.height;if(c.width)t.getContext("2d").drawImage(c,0,0);c.width=w;c.height=h;if(t.width)x.drawImage(t,0,0,w,h)};
+im.onload=fit;if(im.complete)fit();window.onresize=fit;
+const P=e=>{const r=c.getBoundingClientRect();return[(e.clientX-r.left)*c.width/r.width,(e.clientY-r.top)*c.height/r.height]};
+const st=e=>{x.lineCap="round";x.lineJoin="round";const er=col=="e";x.globalCompositeOperation=er?"destination-out":"source-over";x.strokeStyle=col;x.lineWidth=er?26:(e.pointerType=="pen"&&e.pressure?1.5+e.pressure*5:3)};
+c.onpointerdown=e=>{if(e.pointerType=="pen")pen=true;else if(pen)return;e.preventDefault();d=true;try{c.setPointerCapture(e.pointerId)}catch(_){}lp=P(e);st(e);x.beginPath();x.moveTo(lp[0],lp[1]);x.lineTo(lp[0]+.1,lp[1]);x.stroke()};
+c.onpointermove=e=>{if(!d)return;const p=P(e);st(e);x.beginPath();x.moveTo(lp[0],lp[1]);x.lineTo(p[0],p[1]);x.stroke();lp=p};
+c.onpointerup=c.onpointercancel=()=>{d=false};
+ex.querySelectorAll(".pal [data-c]").forEach(b=>b.onclick=()=>{col=b.dataset.c;ex.querySelectorAll(".pal [data-c]").forEach(y=>y.classList.remove("sel"));b.classList.add("sel")});
+$("#ca").onclick=()=>x.clearRect(0,0,c.width,c.height)}
 function pick(){const k=S.o.id+S.tab,pool=S.o[S.tab]||[];if(!pool.length)return null;let q=Q[k];if(!q||!q.l.length){const l=sh(pool);if(q&&l.length>1&&l[0]===q.last)l.push(l.shift());q={l,last:q?q.last:null};Q[k]=q}const it=q.l.shift();q.last=it;return it}
 function loadEx(){done=false;const it=pick(),ex=$("#ex");if(!it){ex.innerHTML="<p>"+u("none")+"</p>";return}
 ex.innerHTML=`<div id="q"></div><div id="fb"></div><div class="row"><button onclick="say(cur)">${u("listen")}</button><button class="pri" onclick="loadEx()">${u("next")}</button><button onclick="home()">${u("home")}</button><button onclick="guide()">${u("guide")}</button></div>`;

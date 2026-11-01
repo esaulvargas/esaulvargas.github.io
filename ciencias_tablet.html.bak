@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Ciencias Naturales 3.º</title>
+<style>
+:root{--g:#168a57;--bg:#eef8f1;--ink:#1c2a39;--or:#ff9f1c}
+*{box-sizing:border-box}
+body{margin:0;font:21px/1.45 "Trebuchet MS","Segoe UI",system-ui,sans-serif;background:var(--bg);color:var(--ink);-webkit-tap-highlight-color:transparent}
+button{font:inherit;font-weight:600;min-height:56px;padding:10px 18px;border:3px solid var(--g);border-radius:18px;background:#fff;color:var(--ink);cursor:pointer;touch-action:manipulation}
+button:active{transform:scale(.97)}
+.pri{background:var(--g);color:#fff}
+main{max-width:940px;margin:auto;padding:14px}
+h1{font-size:34px;margin:.3em 0}h2{font-size:26px}
+#bar{flex-wrap:wrap;position:sticky;top:0;z-index:5;display:flex;gap:8px;align-items:center;padding:8px 12px;background:#fff;border-bottom:4px solid var(--g)}
+.lesson{background:#fff7dd;border:3px solid var(--or);border-radius:20px;padding:6px 18px;margin:12px 0}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:14px;margin:14px 0}
+.card{text-align:left;min-height:150px;padding:16px;border-width:4px;font-weight:400}
+.card .ic{font-size:46px;display:block}.card b{font-size:25px}
+.tabs,.row{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
+.opt{display:block;width:100%;margin:8px 0;text-align:left;font-size:23px}
+.good{background:#c8f1d8!important;border-color:var(--g)!important}
+.bad{background:#ffd6d6!important;border-color:#d94141!important}
+.sel{background:#ffe9a8!important;border-color:var(--or)!important}
+.fbx{border:3px solid;border-radius:16px;padding:8px 16px;margin:10px 0}
+.chip{margin:5px;font-size:22px}.chip:disabled{opacity:1}
+.boxes{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin:12px 0}
+.bx{border:4px dashed var(--g);border-radius:18px;padding:8px;min-height:110px;background:#fff}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+#pool{padding:6px;border-radius:14px;background:#fff}
+ol{padding-left:34px}li{font-size:23px}
+canvas{width:100%;height:280px;background:#fff;border:4px dashed var(--g);border-radius:18px;touch-action:none;display:block}
+#md{position:fixed;inset:0;background:rgba(20,30,40,.55);display:none;z-index:20;align-items:center;justify-content:center;padding:12px}
+#md.on{display:flex}
+.mb{background:#fff;border-radius:22px;max-width:780px;width:100%;max-height:92vh;overflow:auto;padding:18px}
+.mb img{max-width:100%;border-radius:10px;border:2px solid #ccc}
+.mb h3{color:var(--g);margin:1em 0 .2em}
+.cf{position:fixed;top:-40px;font-size:30px;animation:f 1.8s linear forwards;z-index:30;pointer-events:none}
+@keyframes f{to{transform:translateY(115vh) rotate(360deg)}}
+main.wide{max-width:1400px}
+.sheet{display:flex;flex-direction:column;gap:10px;align-items:center}
+.words{background:#fff;border:3px solid var(--or);border-radius:16px;padding:8px;display:flex;flex-wrap:wrap;gap:6px;justify-content:center;width:100%}
+.words b{width:100%;text-align:center}
+.words span{background:#fff7dd;border:2px solid var(--or);border-radius:12px;padding:6px 12px;font-size:22px;touch-action:manipulation}
+.words span.x{text-decoration:line-through;opacity:.45}
+.wrap{position:relative;line-height:0;max-width:100%;flex:1;min-width:0}
+.wrap img{max-width:100%;max-height:none;width:100%;display:block;border-radius:10px;border:2px solid #bbb;background:#fff}
+.wrap canvas{position:absolute;left:0;top:0;width:100%;height:100%;border:0;background:transparent}
+.pal button{min-width:56px;padding:6px 14px}
+@media(orientation:landscape) and (min-width:700px){.sheet{flex-direction:row;align-items:flex-start}.words{width:230px;flex-direction:column;flex-wrap:nowrap;align-items:stretch;flex:none;max-height:80vh;overflow:auto;position:sticky;top:76px}.words span{text-align:center}}
+@media(max-width:560px){body{font-size:19px}.two{grid-template-columns:1fr}h1{font-size:28px}}
+@media(prefers-reduced-motion:reduce){.cf{display:none}}
+</style></head><body>
+<div id="app"></div><div id="md"></div>
+<script>
+/* ================= DATOS: para añadir un tema, añade un objeto a TES (español) y otro a TEN (inglés, mismo id y mismo orden) =================
+ quiz:[{q,o:[CORRECTA,mala,mala],w}]   tf:[{q,a:true/false,w}]   fill:[{s:"frase con ____",b:[CORRECTA,otra,otra],w}]
+ cls:[{t,b:[cajas],i:[[palabra,nºCaja]],w}]   match:[{t,p:[[izq,der]],w}]   order:[{t,s:[pasos en orden],w}]
+ draw:[{p:consigna,m:modelo,w}]   pre:"tema1", pages:["10-11",...] -> imagenes/tema1_p10-11_es.png / _en.png */
+const TES=[{
+id:"cuerpo",icon:"🧍",title:"Mi cuerpo y los seres vivos",desc:"Partes del cuerpo, huesos, músculos, etapas de la vida, emociones y hábitos saludables.",
+pre:"tema1",pages:["10-11","12-13","14-15","16-17","18-19","20-21","22-23"],
+guide:`<h2>🧍 Mi cuerpo y los seres vivos</h2>
+<h3>Las 3 funciones vitales (life processes)</h3>
+<p>Las personas somos seres vivos porque hacemos tres cosas para sobrevivir:</p>
+<ul><li>🍎 <b>Nutrición (nutrition)</b>: sacamos energía y materias primas de la comida.</li>
+<li>👀 <b>Sensibilidad (sensitivity)</b>: notamos lo que pasa a nuestro alrededor y respondemos.</li>
+<li>🐣 <b>Reproducción (reproduction)</b>: tenemos bebés parecidos a nosotros.</li></ul>
+<p>💡 <b>Truco:</b> ¡Nutrición, Sensibilidad, Reproducción! Un coche no hace ninguna de las tres, así que no es un ser vivo.</p>
+<h3>Las partes del cuerpo (our body)</h3>
+<p>Tiene tres partes: <b>cabeza (head)</b>, <b>tronco (trunk)</b> y <b>extremidades (limbs)</b>. En el tronco están el <b>tórax (thorax)</b> y el <b>abdomen</b>. Los brazos son las extremidades de arriba y las piernas, las de abajo.</p>
+<p>Dentro tenemos <b>órganos (organs)</b>: estómago, corazón, pulmones, cerebro… ¡cada uno hace un trabajo!</p>
+<h3>Huesos y músculos</h3>
+<p>🦴 Los <b>huesos (bones)</b> son duros y fuertes. Todos juntos forman el <b>esqueleto (skeleton)</b>. Se doblan en las <b>articulaciones (joints)</b>, como el codo y la rodilla.</p>
+<p>💪 Los <b>músculos (muscles)</b> son elásticos y están pegados a los huesos. Se <b>contraen</b> (se encogen) y se <b>relajan</b>, y así mueven el cuerpo.</p>
+<p>🌟 <b>Curiosidad:</b> el fémur, el hueso del muslo, es el más largo de todos.</p>
+<h3>Las etapas de la vida (stages of life)</h3>
+<p>👶 Infancia → 🧒 Adolescencia → 🧑 Edad adulta → 👵 Vejez. Las personas mayores pierden fuerza, ¡pero pueden seguir muy activas!</p>
+<h3>Las emociones</h3>
+<p>😊 alegría, 😢 tristeza, 😠 enfado y 😮 sorpresa. Si estamos tristes o asustados mucho tiempo, hay que pedir ayuda a un adulto.</p>
+<h3>Hábitos saludables (healthy habits)</h3>
+<p>🚿 Higiene (ducha, manos y dientes limpios) · 🏃 ejercicio · 🥦 comida sana · 🪑 buena postura · 😴 dormir unas 10 horas · 💉 las vacunas nos protegen de enfermedades.</p>`,
+quiz:[
+{q:"¿Cuáles son las tres partes principales del cuerpo?",o:["Cabeza, tronco y extremidades","Brazos, piernas y pies","Tórax, abdomen y cuello"],w:"Head, trunk y limbs: cabeza, tronco y extremidades."},
+{q:"Te comes un plátano. ¿Qué función vital haces?",o:["Nutrición","Sensibilidad","Reproducción"],w:"Al comer conseguimos energía y materias primas para crecer."},
+{q:"Ves un semáforo en rojo y te paras. ¿Qué función vital es?",o:["Sensibilidad","Nutrición","Reproducción"],w:"Notamos lo que pasa a nuestro alrededor y respondemos."},
+{q:"¿Cómo se llama el lugar donde se unen dos huesos?",o:["Articulación","Músculo","Órgano"],w:"El esqueleto se dobla en las articulaciones, como el codo y la rodilla."},
+{q:"¿Qué hace que los huesos se muevan?",o:["Los músculos, al tirar de ellos","La piel","El estómago"],w:"Los músculos están pegados a los huesos: se contraen y se relajan y nos movemos."},
+{q:"Un niño de 8 años, ¿en qué etapa de la vida está?",o:["Infancia","Adolescencia","Vejez"],w:"Los niños y niñas están en la infancia: van al cole y aprenden a leer y escribir."},
+{q:"¿Cuántas horas conviene dormir cada noche a tu edad?",o:["Unas diez","Unas cuatro","Unas quince"],w:"Dormir unas diez horas nos da energía para el día siguiente."}],
+tf:[
+{q:"Los huesos y los músculos trabajan juntos para mover el cuerpo.",a:true,w:"Los músculos tiran de los huesos y así nos movemos."},
+{q:"Las personas mayores no pueden hacer deporte.",a:false,w:"Pierden fuerza, pero pueden seguir activas. ¡Y podemos aprender de ellas!"},
+{q:"Los adultos siguen creciendo toda la vida.",a:false,w:"Los adultos dejan de crecer: su cuerpo ya está desarrollado."},
+{q:"Las vacunas enseñan al cuerpo a defenderse de una enfermedad.",a:true,w:"Son seguras y protegen a todos, desde los bebés hasta los mayores."},
+{q:"Un coche es un ser vivo.",a:false,w:"No se nutre, no siente y no tiene crías: no hace las tres funciones vitales."},
+{q:"Hay que lavar la fruta antes de comerla.",a:true,w:"Es un hábito de higiene que ayuda a evitar enfermedades."},
+{q:"La rodilla es una articulación.",a:true,w:"En la rodilla se unen huesos y el esqueleto se dobla."}],
+fill:[
+{s:"Nuestro esqueleto está formado por huesos y ____.",b:["articulaciones","pulmones","uñas"],w:"El esqueleto son todos los huesos, que se doblan en las articulaciones."},
+{s:"Los músculos tiran de los ____ y nos ayudan a movernos.",b:["huesos","dientes","ojos"],w:"Los músculos están pegados a los huesos."},
+{s:"Con la nutrición conseguimos energía y materias primas de la ____.",b:["comida","ropa","música"],w:"La comida nos da la energía y lo que necesitamos para crecer."},
+{s:"Con la sensibilidad notamos lo que pasa y ____ a ello.",b:["respondemos","dormimos","crecemos"],w:"Sentimos y después reaccionamos."},
+{s:"Para ser fuertes y estar sanos, hay que dormir, hacer ejercicio y comer ____.",b:["sano","dulces","poco"],w:"Una comida sana ayuda a que el cuerpo funcione bien."}],
+cls:[
+{t:"¿En qué parte del cuerpo está?",b:["Cabeza","Tronco","Extremidades"],i:[["frente",0],["mejilla",0],["barbilla",0],["tórax",1],["abdomen",1],["codo",2],["rodilla",2],["mano",2]],w:"La cara está en la cabeza; tórax y abdomen, en el tronco; brazos y piernas son extremidades."},
+{t:"¿Qué función vital es?",b:["🍎 Nutrición","👀 Sensibilidad","🐣 Reproducción"],i:[["Beber agua",0],["Comer una manzana",0],["Oír un timbre",1],["Ver un semáforo",1],["Tener un bebé",2],["Una abeja pone huevos",2]],w:"Comer y beber es nutrición; sentir lo de fuera, sensibilidad; tener crías, reproducción."},
+{t:"¿Qué función vital hace este órgano?",b:["🍽️ Nutrición","👀 Sensibilidad"],i:[["estómago",0],["pulmón",0],["corazón",0],["intestinos",0],["ojo",1],["nariz",1],["cerebro",1],["piel",1]],w:"Los órganos de la nutrición trabajan con la comida y el aire; los de la sensibilidad nos hacen sentir."},
+{t:"¿Es un hábito saludable?",b:["✅ Saludable","❌ No saludable"],i:[["Lavarse las manos",0],["Comer fruta",0],["Dormir diez horas",0],["Hacer deporte",0],["Sentarse encorvado",1],["Llevar la mochila en un solo hombro",1],["Pasar el día sin moverse",1]],w:"Los hábitos saludables nos mantienen fuertes y contentos."}],
+match:[
+{t:"Une el inglés con el español",p:[["head","cabeza"],["trunk","tronco"],["limbs","extremidades"],["elbow","codo"],["knee","rodilla"]],w:"Son palabras del libro de Natural Science."},
+{t:"Une cada palabra con su significado",p:[["Hueso","Duro y fuerte"],["Músculo","Elástico: se contrae y se relaja"],["Articulación","Donde se unen los huesos"],["Esqueleto","Todos los huesos juntos"]],w:"Así trabaja el cuerpo para moverse."},
+{t:"Une cada etapa con su descripción",p:[["Infancia","Van al cole y aprenden a leer"],["Adolescencia","Se preparan para ser adultos"],["Edad adulta","Dejan de crecer y tienen responsabilidades"],["Vejez","Pierden fuerza, pero siguen activos"]],w:"Pasamos por estas etapas a lo largo de la vida."},
+{t:"Une la cara con la emoción",p:[["😊","alegría"],["😢","tristeza"],["😠","enfado"],["😮","sorpresa"]],w:"Las emociones son una parte importante de nosotros."}],
+order:[
+{t:"Etapas de la vida: de la más joven a la más mayor",s:["Bebé","Niño o niña","Adolescente","Adulto","Anciano"],w:"Crecemos y cambiamos poco a poco."},
+{t:"El brazo, de arriba a abajo",s:["Hombro","Codo","Antebrazo","Muñeca","Mano"],w:"Del hombro a la mano pasamos por el codo y la muñeca."},
+{t:"La pierna, de arriba a abajo",s:["Cadera","Muslo","Rodilla","Tobillo","Pie"],w:"De la cadera al pie pasamos por la rodilla y el tobillo."}],
+draw:[
+{p:"Dibuja cuatro caritas: alegre, triste, enfadada y sorprendida. ¡Ponles nombre!",m:"😊 alegre · 😢 triste · 😠 enfadada · 😮 sorprendida",w:"Las caras muestran cómo nos sentimos."},
+{p:"Escribe tres hábitos saludables que tengas tú.",m:"Me lavo los dientes. Duermo diez horas. Juego al baloncesto.",w:"Repetir buenos hábitos nos mantiene sanos."},
+{p:"Dibuja un esqueleto sencillo y escribe tres huesos.",m:"💀 cráneo, costillas, columna, fémur",w:"El esqueleto sostiene nuestro cuerpo."},
+{p:"Dibuja un órgano y escribe qué función vital hace.",m:"Estómago → nutrición · Ojo → sensibilidad",w:"Cada órgano ayuda a una función vital."}]
+}];
+
+/* ================= ENGLISH VERSION (misma estructura y mismo orden que TES) ================= */
+const TEN=[{
+id:"cuerpo",title:"My body and living things",desc:"Body parts, bones, muscles, stages of life, emotions and healthy habits.",
+guide:`<h2>🧍 My body and living things</h2>
+<h3>The 3 life processes</h3>
+<p>People are living things because we do three things to survive:</p>
+<ul><li>🍎 <b>Nutrition</b>: we get energy and raw materials from food.</li>
+<li>👀 <b>Sensitivity</b>: we sense what happens around us and respond to it.</li>
+<li>🐣 <b>Reproduction</b>: we have babies, similar to ourselves.</li></ul>
+<p>💡 <b>Trick:</b> Nutrition, Sensitivity, Reproduction! A car does none of the three, so it is not a living thing.</p>
+<h3>Our body</h3>
+<p>It has three main parts: the <b>head</b>, the <b>trunk</b> and the <b>limbs</b>. The <b>thorax</b> and the <b>abdomen</b> are in the trunk. Arms are the upper limbs and legs are the lower limbs.</p>
+<p>Inside we have <b>organs</b>: stomach, heart, lungs, brain… Each one has a job!</p>
+<h3>Bones and muscles</h3>
+<p>🦴 <b>Bones</b> are rigid and strong. All our bones together are the <b>skeleton</b>. It bends at the <b>joints</b>, like the elbow and the knee.</p>
+<p>💪 <b>Muscles</b> are elastic and attached to our bones. They <b>contract</b> and <b>relax</b> to move our body.</p>
+<p>🌟 <b>Fun fact:</b> the femur, the bone in your thigh, is the longest bone.</p>
+<h3>The stages of life</h3>
+<p>👶 Childhood → 🧒 Adolescence → 🧑 Adulthood → 👵 Old age. Elderly people lose strength, but they can still be very active!</p>
+<h3>Emotions</h3>
+<p>😊 happy, 😢 sad, 😠 angry and 😮 surprised. If we feel sad or scared for a long time, we should ask an adult for help.</p>
+<h3>Healthy habits</h3>
+<p>🚿 Hygiene (shower, clean hands and teeth) · 🏃 exercise · 🥦 healthy food · 🪑 good posture · 😴 sleep about ten hours · 💉 vaccines protect us from diseases.</p>`,
+quiz:[
+{q:"What are the three main parts of the body?",o:["Head, trunk and limbs","Arms, legs and feet","Thorax, abdomen and neck"],w:"Head, trunk and limbs are the three main parts."},
+{q:"You eat a banana. Which life process is it?",o:["Nutrition","Sensitivity","Reproduction"],w:"When we eat we get energy and raw materials to grow."},
+{q:"You see a red traffic light and you stop. Which life process is it?",o:["Sensitivity","Nutrition","Reproduction"],w:"We sense what happens around us and we respond to it."},
+{q:"What is the place where two bones meet?",o:["A joint","A muscle","An organ"],w:"The skeleton bends at the joints, like the elbow and the knee."},
+{q:"What makes our bones move?",o:["Muscles pulling on them","The skin","The stomach"],w:"Muscles are attached to bones. They contract and relax and we move."},
+{q:"An eight-year-old child is in which stage of life?",o:["Childhood","Adolescence","Old age"],w:"Children are in childhood: they go to school and learn to read and write."},
+{q:"How many hours should you sleep every night at your age?",o:["About ten","About four","About fifteen"],w:"Sleeping about ten hours gives us energy for the next day."}],
+tf:[
+{q:"Bones and muscles work together to move our body.",a:true,w:"Muscles pull on bones and that is how we move."},
+{q:"Elderly people can't do sports.",a:false,w:"They lose strength, but they can still be active. And we can learn from them!"},
+{q:"Adults keep growing all their lives.",a:false,w:"Adults stop growing: their body is fully developed."},
+{q:"Vaccines teach your body to fight a disease.",a:true,w:"They are safe and protect everyone, from babies to elderly people."},
+{q:"A car is a living thing.",a:false,w:"It doesn't feed, sense or have babies: it doesn't do the three life processes."},
+{q:"We should wash fruit before we eat it.",a:true,w:"It is a hygiene habit that helps prevent illnesses."},
+{q:"The knee is a joint.",a:true,w:"Bones meet at the knee and the skeleton bends there."}],
+fill:[
+{s:"Our skeleton is made up of bones and ____.",b:["joints","lungs","nails"],w:"The skeleton is all our bones, and it bends at the joints."},
+{s:"Muscles pull on our ____ and help them to move.",b:["bones","teeth","eyes"],w:"Muscles are attached to bones."},
+{s:"With nutrition we get energy and raw materials from ____.",b:["food","clothes","music"],w:"Food gives us the energy and the materials we need to grow."},
+{s:"With sensitivity we sense what happens around us and ____ to it.",b:["respond","sleep","grow"],w:"First we sense, then we react."},
+{s:"To be strong and healthy we should sleep, exercise and eat ____ food.",b:["healthy","sweet","less"],w:"Healthy food helps our body work correctly."}],
+cls:[
+{t:"Which part of the body is it in?",b:["Head","Trunk","Limbs"],i:[["forehead",0],["cheek",0],["chin",0],["thorax",1],["abdomen",1],["elbow",2],["knee",2],["hand",2]],w:"The face is on the head; the thorax and abdomen are in the trunk; arms and legs are limbs."},
+{t:"Which life process is it?",b:["🍎 Nutrition","👀 Sensitivity","🐣 Reproduction"],i:[["Drinking water",0],["Eating an apple",0],["Hearing a bell",1],["Seeing a traffic light",1],["Having a baby",2],["A bee lays eggs",2]],w:"Eating and drinking is nutrition; sensing the world is sensitivity; having young is reproduction."},
+{t:"Which life process does this organ carry out?",b:["🍽️ Nutrition","👀 Sensitivity"],i:[["stomach",0],["lung",0],["heart",0],["intestines",0],["eye",1],["nose",1],["brain",1],["skin",1]],w:"Nutrition organs work with food and air; sensitivity organs help us sense things."},
+{t:"Is it a healthy habit?",b:["✅ Healthy","❌ Not healthy"],i:[["Washing your hands",0],["Eating fruit",0],["Sleeping ten hours",0],["Doing sport",0],["Sitting hunched over",1],["Carrying your backpack on one shoulder",1],["Never moving all day",1]],w:"Healthy habits keep us strong and happy."}],
+match:[
+{t:"Match the English word with its Spanish translation",p:[["head","cabeza"],["trunk","tronco"],["limbs","extremidades"],["elbow","codo"],["knee","rodilla"]],w:"These are words from your Natural Science book."},
+{t:"Match each word with its meaning",p:[["Bone","Rigid and strong"],["Muscle","Elastic: it contracts and relaxes"],["Joint","Where bones meet"],["Skeleton","All our bones together"]],w:"This is how the body works to move."},
+{t:"Match each stage with its description",p:[["Childhood","They go to school and learn to read"],["Adolescence","They prepare to become adults"],["Adulthood","They stop growing and have responsibilities"],["Old age","They lose strength but stay active"]],w:"We go through these stages during our life."},
+{t:"Match the face with the emotion",p:[["😊","happy"],["😢","sad"],["😠","angry"],["😮","surprised"]],w:"Emotions are an important part of us."}],
+order:[
+{t:"Stages of life: from youngest to oldest",s:["Baby","Child","Teenager","Adult","Elderly person"],w:"We grow and change little by little."},
+{t:"The arm, from top to bottom",s:["Shoulder","Elbow","Forearm","Wrist","Hand"],w:"From the shoulder to the hand we pass the elbow and the wrist."},
+{t:"The leg, from top to bottom",s:["Hip","Thigh","Knee","Ankle","Foot"],w:"From the hip to the foot we pass the knee and the ankle."}],
+draw:[
+{p:"Draw four faces: happy, sad, angry and surprised. Label them!",m:"😊 happy · 😢 sad · 😠 angry · 😮 surprised",w:"Faces show how we feel."},
+{p:"Write three healthy habits that you have.",m:"I brush my teeth. I sleep ten hours. I play basketball.",w:"Repeating good habits keeps us healthy."},
+{p:"Draw a simple skeleton and write three bones.",m:"💀 skull, ribs, backbone, femur",w:"The skeleton holds up our body."},
+{p:"Draw an organ and write which life process it carries out.",m:"Stomach → nutrition · Eye → sensitivity",w:"Each organ helps with a life process."}]
+}];
+/* ===== FICHAS PARA ESCRIBIR ENCIMA: una línea por ficha =====
+ t: id del tema · img: archivo en la carpeta imagenes · title: [inglés, español] · w: lista de palabras */
+const FICHAS=[
+{t:"cuerpo",img:"tema_completar_inside_body.png",title:["Inside our body","Dentro de nuestro cuerpo"],w:["mouth","heart","lung","stomach","intestines","eye","ear","nose","tongue","skin","brain","nerves","bone","muscle"]}
+];
+TEN.forEach((t,i)=>{t.icon=TES[i].icon;t.pre=TES[i].pre;t.pages=TES[i].pages});
+
+/* ================= CÓDIGO (no hace falta tocarlo) ================= */
+const $=s=>document.querySelector(s);
+const sh=a=>{a=a.slice();for(let i=a.length;i>1;){const j=Math.random()*i|0;i--;[a[i],a[j]]=[a[j],a[i]]}return a};
+const TABS=["quiz","tf","fill","cls","match","order","draw","fichas"],TI=["🔘","✅","✏️","📦","🔗","🔢","🎨","📝"];
+let LG="en";try{LG=localStorage.getItem("lg")=="es"?"es":"en"}catch(e){}
+const U={
+en:{hi:"🔬 Hello, scientist! Let's explore",pk:"Pick a topic, do the exercises and win ⭐. You have ",st:" stars!",lt:"🌱 Mini lesson",
+lx:"A <b>living thing</b> does three things: it <b>feeds</b> 🍎, it <b>senses</b> 👀 and it <b>reproduces</b> 🐣. Find out more in each topic!",
+rev:"🎲 General review",home:"🏠 Home",guide:"📖 Guide",listen:"🔊 Listen",next:"Next ➡️",none:"There are no exercises of this type yet.",
+oops:"Oops, this exercise could not load. Press Next.",good:"🎉 Well done!",bad:"🤔 Almost! Keep trying.",why:"Why?",close:"✖ Close",pages:"📄 Book pages",
+miss:"Missing image ",clear:"🧽 Clear",model:"👀 See model",did:"⭐ I did it!",mod:"🔎 Model: ",comp:"Complete: ",t:"✅ True",f:"❌ False",
+cls:"Tap a word and then the box where it goes.",mt:"Tap one on the left and its partner on the right.",or:"Tap the steps in order.",
+dw:"Drawing and writing help you remember.",bes:"🇪🇸 Spanish",ben:"🇬🇧 Original",
+nof:"There are no worksheets for this topic yet.",wd:"✏️ Words",ink:"Pen",er:"🧽 Eraser",ca:"🗑️ Clear all",mi:"Image not found: ",tabs:["Choose","True/False","Complete","Sort","Match","Order","Draw","Worksheets"],vo:"en-GB"},
+es:{hi:"🔬 ¡Hola, científica! Vamos a explorar",pk:"Elige un tema, haz los ejercicios y consigue ⭐. ¡Tienes ",st:" estrellas!",lt:"🌱 Mini-lección",
+lx:"Un <b>ser vivo</b> hace tres cosas: se <b>nutre</b> 🍎, <b>siente</b> 👀 y se <b>reproduce</b> 🐣. ¡Descubre más en cada tema!",
+rev:"🎲 Repaso general",home:"🏠 Inicio",guide:"📖 Guía",listen:"🔊 Escuchar",next:"Siguiente ➡️",none:"Aún no hay ejercicios de este tipo.",
+oops:"Ups, este ejercicio no se pudo cargar. Pulsa Siguiente.",good:"🎉 ¡Muy bien!",bad:"🤔 ¡Casi! Sigue intentándolo.",why:"¿Por qué?",close:"✖ Cerrar",pages:"📄 Páginas del libro",
+miss:"Falta la imagen ",clear:"🧽 Borrar",model:"👀 Ver modelo",did:"⭐ ¡Ya lo hice!",mod:"🔎 Modelo: ",comp:"Completa: ",t:"✅ Verdadero",f:"❌ Falso",
+cls:"Toca una palabra y luego la caja donde va.",mt:"Toca uno de la izquierda y su pareja de la derecha.",or:"Toca los pasos en orden.",
+dw:"Dibujar y escribir ayuda a recordar.",bes:"🇪🇸 Español",ben:"🇬🇧 Original",
+nof:"Todavía no hay fichas para este tema.",wd:"✏️ Palabras",ink:"Lápiz",er:"🧽 Goma",ca:"🗑️ Borrar todo",mi:"No se encuentra la imagen: ",tabs:["Elige","V o F","Completa","Clasifica","Relaciona","Ordena","Dibuja","Fichas"],vo:"es-ES"}};
+const u=k=>U[LG][k],TP=()=>LG=="en"?TEN:TES;
+let S={o:null,id:"",tab:"quiz"},pts=0,Q={},cur="",done=false,AC=null;
+function snd(f,d,t){try{AC=AC||new(window.AudioContext||window.webkitAudioContext)();const o=AC.createOscillator(),g=AC.createGain();o.type=t||"sine";o.frequency.value=f;g.gain.value=.07;o.connect(g);g.connect(AC.destination);o.start();g.gain.exponentialRampToValueAtTime(.001,AC.currentTime+d);o.stop(AC.currentTime+d)}catch(e){}}
+const ok=()=>{snd(660,.15);setTimeout(()=>snd(880,.2),130)},ko=()=>snd(200,.3,"triangle");
+function say(t){try{const s=window.speechSynthesis;if(!s||!window.SpeechSynthesisUtterance)return;s.cancel();const x=new SpeechSynthesisUtterance(String(t).replace(/<[^>]+>/g,""));x.lang=u("vo");x.rate=.9;s.speak(x)}catch(e){}}
+function conf(){try{for(let i=0;i<24;i++){const d=document.createElement("div");d.className="cf";d.textContent=["⭐","🎉","✨","🌟"][i%4];d.style.left=Math.random()*95+"vw";d.style.animationDelay=Math.random()*.4+"s";document.body.appendChild(d);setTimeout(()=>d.remove(),2400)}}catch(e){}}
+const upd=()=>document.querySelectorAll(".pts").forEach(e=>e.textContent=pts);
+const allTopic=()=>{const r={id:"all",icon:"🎲",title:u("rev"),guide:TP().map(t=>t.guide).join("<hr>")};TABS.forEach(k=>r[k]=[].concat(...TP().map(t=>t[k]||[])));return r};
+const lgb=()=>`<span class="lg"><button class="${LG=="en"?"pri":""}" onclick="setL('en')">🇬🇧 English</button><button class="${LG=="es"?"pri":""}" onclick="setL('es')">🇪🇸 Español</button></span>`;
+function setL(l){LG=l;try{localStorage.setItem("lg",l)}catch(e){}Q={};shut();try{window.speechSynthesis.cancel()}catch(e){}S.o?openT(S.id,S.tab):home()}
+
+function home(){S.o=null;shut();document.documentElement.lang=LG;$("#app").innerHTML=`<main><div class="row">${lgb()}</div><h1>${u("hi")}</h1>
+<p>${u("pk")}<b class="pts">${pts}</b>${u("st")}</p>
+<div class="lesson"><h2>${u("lt")}</h2><p>${u("lx")}</p></div>
+<div class="cards">${TP().map(t=>`<button class="card" onclick="openT('${t.id}')"><span class="ic">${t.icon}</span><b>${t.title}</b><br>${t.desc}</button>`).join("")}</div>
+<button class="pri" onclick="openT('all')">${u("rev")}</button></main>`}
+function openT(id,tab){S.id=id;S.o=id=="all"?allTopic():TP().find(t=>t.id==id);S.tab=tab||"quiz";S.f=0;shell()}
+function shell(){document.documentElement.lang=LG;$("#app").innerHTML=`<div id="bar"><button onclick="home()">${u("home")}</button><button onclick="guide()">${u("guide")}</button>${lgb()}<b style="margin-left:auto">${S.o.icon} ⭐ <span class="pts">${pts}</span></b></div>
+<main class="${S.tab=="fichas"?"wide":""}"><div class="tabs">${TABS.map((k,i)=>k=="fichas"&&!FL().length?"":`<button class="${k==S.tab?"pri":""}" onclick="S.tab='${k}';shell()">${TI[i]} ${u("tabs")[i]}</button>`).join("")}</div><div id="ex"></div></main>`;S.tab=="fichas"?loadFichas():loadEx()}
+const FL=()=>FICHAS.filter(f=>S.id=="all"||f.t==S.id);
+function loadFichas(){const L=FL(),ex=$("#ex");if(!L.length){ex.innerHTML="<p>"+u("nof")+"</p>";return}
+const f=L[Math.min(S.f||0,L.length-1)],ti=f.title?f.title[LG=="en"?0:1]:f.img;
+ex.innerHTML=(L.length>1?`<div class="row">${L.map((g,i)=>`<button class="${g===f?"pri":""}" onclick="S.f=${i};loadFichas()">${g.title?g.title[LG=="en"?0:1]:g.img}</button>`).join("")}</div>`:"")+
+`<h2>${ti}</h2><div class="sheet"><div class="words"><b>${u("wd")}</b>${f.w.map(w=>`<span>${w}</span>`).join("")}</div><div class="wrap"><img alt="${ti}" src="imagenes/${f.img}"><canvas></canvas></div></div>
+<div class="row pal"><button data-c="#1d4ed8" style="color:#1d4ed8">✏️ ${u("ink")}</button><button data-c="#d02020" style="color:#d02020">✏️</button><button data-c="#111" style="color:#111">✏️</button><button data-c="e">${u("er")}</button><button id="ca">${u("ca")}</button></div>
+<div class="row"><button onclick="home()">${u("home")}</button><button onclick="guide()">${u("guide")}</button></div>`;
+ex.querySelectorAll(".words span").forEach(e=>e.onclick=()=>e.classList.toggle("x"));
+const im=$(".wrap img"),c=$(".wrap canvas"),x=c.getContext("2d");let col="#1d4ed8",d=false,lp=null,pen=false;
+im.onerror=()=>{$(".wrap").innerHTML="<p style='line-height:1.4'>"+u("mi")+"<code>imagenes/"+f.img+"</code></p>"};
+const fit=()=>{const w=im.clientWidth,h=im.clientHeight;if(!w||!h||(c.width==w&&c.height==h))return;const t=document.createElement("canvas");t.width=c.width;t.height=c.height;if(c.width)t.getContext("2d").drawImage(c,0,0);c.width=w;c.height=h;if(t.width)x.drawImage(t,0,0,w,h)};
+im.onload=fit;if(im.complete)fit();window.onresize=fit;
+const P=e=>{const r=c.getBoundingClientRect();return[(e.clientX-r.left)*c.width/r.width,(e.clientY-r.top)*c.height/r.height]};
+const st=e=>{x.lineCap="round";x.lineJoin="round";const er=col=="e";x.globalCompositeOperation=er?"destination-out":"source-over";x.strokeStyle=col;x.lineWidth=er?26:(e.pointerType=="pen"&&e.pressure?1.5+e.pressure*5:3)};
+c.onpointerdown=e=>{if(e.pointerType=="pen")pen=true;else if(pen)return;e.preventDefault();d=true;try{c.setPointerCapture(e.pointerId)}catch(_){}lp=P(e);st(e);x.beginPath();x.moveTo(lp[0],lp[1]);x.lineTo(lp[0]+.1,lp[1]);x.stroke()};
+c.onpointermove=e=>{if(!d)return;const p=P(e);st(e);x.beginPath();x.moveTo(lp[0],lp[1]);x.lineTo(p[0],p[1]);x.stroke();lp=p};
+c.onpointerup=c.onpointercancel=()=>{d=false};
+ex.querySelectorAll(".pal [data-c]").forEach(b=>b.onclick=()=>{col=b.dataset.c;ex.querySelectorAll(".pal [data-c]").forEach(y=>y.classList.remove("sel"));b.classList.add("sel")});
+$("#ca").onclick=()=>x.clearRect(0,0,c.width,c.height)}
+function pick(){const k=S.o.id+S.tab,pool=S.o[S.tab]||[];if(!pool.length)return null;let q=Q[k];if(!q||!q.l.length){const l=sh(pool);if(q&&l.length>1&&l[0]===q.last)l.push(l.shift());q={l,last:q?q.last:null};Q[k]=q}const it=q.l.shift();q.last=it;return it}
+function loadEx(){done=false;const it=pick(),ex=$("#ex");if(!it){ex.innerHTML="<p>"+u("none")+"</p>";return}
+ex.innerHTML=`<div id="q"></div><div id="fb"></div><div class="row"><button onclick="say(cur)">${u("listen")}</button><button class="pri" onclick="loadEx()">${u("next")}</button><button onclick="home()">${u("home")}</button><button onclick="guide()">${u("guide")}</button></div>`;
+try{R[S.tab](it,$("#q"))}catch(e){ex.innerHTML="<p>"+u("oops")+"</p>"}}
+function fin(g,w){if(done)return;done=true;if(g){pts++;upd();ok();conf()}else ko();$("#fb").innerHTML=`<div class="fbx ${g?"good":"bad"}"><b>${g?u("good"):u("bad")}</b><br>${u("why")} ${w}</div>`}
+function mc(b,q,o,w,shuf,blank){cur=q.replace("____","…");const L=o.map((x,i)=>[x,i]),l=shuf?sh(L):L;
+b.innerHTML=`<h2 id="qq">${q}</h2>`+l.map(([x,i])=>`<button class="opt" data-i="${i}">${x}</button>`).join("");
+b.querySelectorAll(".opt").forEach(x=>x.onclick=()=>{if(done)return;const g=x.dataset.i=="0";x.classList.add(g?"good":"bad");if(!g)b.querySelector('[data-i="0"]').classList.add("good");if(blank)$("#qq").innerHTML=q.replace("____","<u>"+o[0]+"</u>");fin(g,w)})}
+const flash=x=>{x.classList.add("bad");setTimeout(()=>x.classList.remove("bad"),500)};
+const R={
+quiz:(i,b)=>mc(b,i.q,i.o,i.w,1),
+tf:(i,b)=>{mc(b,i.q,i.a?[u("t"),u("f")]:[u("f"),u("t")],i.w,0);if(!i.a){const bs=b.querySelectorAll(".opt");bs[0].parentNode.insertBefore(bs[1],bs[0])}},
+fill:(i,b)=>mc(b,u("comp")+i.s,i.b,i.w,1,1),
+cls:(it,b)=>{cur=it.t;let sel=null,n=it.i.length;
+b.innerHTML=`<h2>${it.t}</h2><p>${u("cls")}</p><div id="pool">${sh(it.i).map(([x,c])=>`<button class="chip" data-c="${c}">${x}</button>`).join("")}</div><div class="boxes">${it.b.map((x,i)=>`<div class="bx" data-b="${i}"><b>${x}</b><div></div></div>`).join("")}</div>`;
+b.querySelectorAll(".chip").forEach(c=>c.onclick=()=>{b.querySelectorAll(".chip").forEach(x=>x.classList.remove("sel"));sel=c;c.classList.add("sel")});
+b.querySelectorAll(".bx").forEach(x=>x.onclick=()=>{if(!sel||done)return;if(sel.dataset.c==x.dataset.b){x.lastChild.appendChild(sel);sel.classList.remove("sel");sel.disabled=true;sel=null;ok();if(--n==0)fin(true,it.w)}else{ko();flash(sel)}})},
+match:(it,b)=>{cur=it.t;let sel=null,n=it.p.length;const L=sh(it.p.map((p,i)=>[p[0],i])),Rr=sh(it.p.map((p,i)=>[p[1],i]));
+const col=(a,s)=>`<div>${a.map(([x,i])=>`<button class="opt m" data-s="${s}" data-i="${i}">${x}</button>`).join("")}</div>`;
+b.innerHTML=`<h2>${it.t}</h2><p>${u("mt")}</p><div class="two">${col(L,"l")}${col(Rr,"r")}</div>`;
+b.querySelectorAll(".m").forEach(x=>x.onclick=()=>{if(x.classList.contains("good")||done)return;
+if(x.dataset.s=="l"){b.querySelectorAll('[data-s="l"]').forEach(y=>y.classList.remove("sel"));sel=x;x.classList.add("sel");return}
+if(!sel)return;if(sel.dataset.i==x.dataset.i){sel.classList.remove("sel");sel.classList.add("good");x.classList.add("good");sel=null;ok();if(--n==0)fin(true,it.w)}else{ko();flash(x)}})},
+order:(it,b)=>{cur=it.t;let k=0;b.innerHTML=`<h2>${it.t}</h2><p>${u("or")}</p><ol id="ol"></ol><div id="pool">${sh(it.s.map((x,i)=>[x,i])).map(([x,i])=>`<button class="chip" data-i="${i}">${x}</button>`).join("")}</div>`;
+b.querySelectorAll(".chip").forEach(c=>c.onclick=()=>{if(c.disabled)return;if(c.dataset.i==k){k++;c.disabled=true;$("#ol").innerHTML+=`<li>${c.textContent}</li>`;ok();if(k==it.s.length)fin(true,it.w)}else{ko();flash(c)}})},
+draw:(it,b)=>{cur=it.p;b.innerHTML=`<h2>${it.p}</h2><canvas id="cv"></canvas><div class="row"><button id="cl">${u("clear")}</button><button id="mo">${u("model")}</button><button class="pri" id="dn">${u("did")}</button></div><div id="mod" class="fbx good" style="display:none"></div>`;
+const c=$("#cv");c.width=c.clientWidth||600;c.height=c.clientHeight||280;const x=c.getContext("2d");x.lineCap="round";x.strokeStyle="#1c2a39";let d=false,lp=null;
+const P=e=>{const r=c.getBoundingClientRect();return[(e.clientX-r.left)*c.width/r.width,(e.clientY-r.top)*c.height/r.height]};
+const W=e=>e.pointerType=="pen"&&e.pressure?2+e.pressure*6:4;
+c.onpointerdown=e=>{e.preventDefault();d=true;try{c.setPointerCapture(e.pointerId)}catch(_){}lp=P(e);x.lineWidth=W(e);x.beginPath();x.moveTo(lp[0],lp[1]);x.lineTo(lp[0]+.1,lp[1]);x.stroke()};
+c.onpointermove=e=>{if(!d)return;const p=P(e);x.lineWidth=W(e);x.beginPath();x.moveTo(lp[0],lp[1]);x.lineTo(p[0],p[1]);x.stroke();lp=p};
+c.onpointerup=c.onpointercancel=()=>{d=false};
+$("#cl").onclick=()=>x.clearRect(0,0,c.width,c.height);
+$("#mo").onclick=()=>{$("#mod").style.display="block";$("#mod").innerHTML=u("mod")+it.m};
+$("#dn").onclick=()=>fin(true,it.w||u("dw"))}};
+
+function guide(){const o=S.o,m=$("#md");m.innerHTML=`<div class="mb"><button class="pri" onclick="shut()">${u("close")}</button><div>${o.guide}</div>${o.pages?`<h3>${u("pages")}</h3><div id="bk"></div>`:""}<p><button class="pri" onclick="shut()">${u("close")}</button></p></div>`;m.classList.add("on");if(o.pages)book(0,LG)}
+function shut(){const m=$("#md");if(m)m.classList.remove("on")}
+function book(i,l){const o=S.o,n=`imagenes/${o.pre}_p${o.pages[i]}_${l}.png`;
+$("#bk").innerHTML=`<div class="row">${o.pages.map((p,j)=>`<button class="${j==i?"pri":""}" onclick="book(${j},'${l}')">p. ${p}</button>`).join("")}</div><div class="row"><button class="${l=="es"?"pri":""}" onclick="book(${i},'es')">${u("bes")}</button><button class="${l=="en"?"pri":""}" onclick="book(${i},'en')">${u("ben")}</button></div><img alt="p. ${o.pages[i]}" src="${n}"><p class="miss" hidden>${u("miss")}<code>${n}</code></p>`;
+const im=$("#bk img");im.onerror=()=>{im.hidden=true;$("#bk .miss").hidden=false}}
+$("#md").onclick=e=>{if(e.target.id=="md")shut()};
+document.addEventListener("keydown",e=>{if(e.key=="Escape")shut()});
+home();
+</script></body></html>
