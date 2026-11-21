@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Sílabas, diptongos e hiatos</title>
+<style>
+:root{--p:#d6336c;--p2:#a61e4d;--bg:#fff5f8;--ink:#2b2a4c;--ok:#1f9d55;--okbg:#d9f7e4;--ko:#e03131;--kobg:#ffe3e3;--sun:#ffd43b;--line:#f3d2e2}
+*{box-sizing:border-box}
+body{margin:0;font:21px/1.45 "Trebuchet MS","Segoe UI",system-ui,sans-serif;background:var(--bg);color:var(--ink);-webkit-tap-highlight-color:transparent}
+button{font:inherit;font-weight:600;min-height:56px;padding:10px 18px;border:3px solid var(--p);border-radius:18px;background:#fff;color:var(--ink);cursor:pointer;touch-action:manipulation}
+button:active{transform:scale(.97)}
+.pri{background:var(--p);color:#fff}
+main{max-width:940px;margin:auto;padding:14px}
+h1{font-size:34px;margin:.3em 0}h2{font-size:26px}
+#bar{flex-wrap:wrap;position:sticky;top:0;z-index:5;display:flex;gap:8px;align-items:center;padding:8px 12px;background:#fff;border-bottom:4px solid var(--p)}
+.lesson{background:#fff7dd;border:3px solid var(--sun);border-radius:20px;padding:6px 18px;margin:12px 0}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:14px;margin:14px 0}
+.card{text-align:left;min-height:150px;padding:16px;border-width:4px;font-weight:400}
+.card .ic{font-size:46px;display:block}.card b{font-size:25px}
+.tabs,.row{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
+.opt{display:block;width:100%;margin:8px 0;text-align:left;font-size:23px}
+.good{background:#c8f1d8!important;border-color:var(--ok)!important}
+.bad{background:#ffd6d6!important;border-color:var(--ko)!important}
+.sel{background:#ffe9a8!important;border-color:var(--sun)!important}
+.fbx{border:3px solid;border-radius:16px;padding:8px 16px;margin:10px 0}
+.chip{margin:5px;font-size:22px}.chip:disabled{opacity:1}
+.boxes{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin:12px 0}
+.bx{border:4px dashed var(--p);border-radius:18px;padding:8px;min-height:110px;background:#fff}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+canvas{width:100%;height:280px;background:#fff;border:4px dashed var(--p);border-radius:18px;touch-action:none;display:block}
+#md{position:fixed;inset:0;background:rgba(40,20,30,.55);display:none;z-index:20;align-items:center;justify-content:center;padding:12px}
+#md.on{display:flex}
+.mb{background:#fff;border-radius:22px;max-width:780px;width:100%;max-height:92vh;overflow:auto;padding:18px}
+.mb h3{color:var(--p2);margin:1em 0 .2em}
+.cf{position:fixed;top:-40px;font-size:30px;animation:f 1.8s linear forwards;z-index:30;pointer-events:none}
+@keyframes f{to{transform:translateY(115vh) rotate(360deg)}}
+ol{padding-left:34px}li{font-size:23px}
+@media(max-width:560px){body{font-size:19px}.two{grid-template-columns:1fr}h1{font-size:28px}}
+@media(prefers-reduced-motion:reduce){.cf{display:none}}
+</style></head><body>
+<div id="app"></div><div id="md"></div>
+<script>
+/* ================= DATOS: para añadir contenido, añade un objeto a TOPICS o amplía sus listas =================
+ quiz:[{q,o:[CORRECTA,mala,mala],w}]   tf:[{q,a:true/false,w}]   fill:[{s:"frase con ____",b:[CORRECTA,otra,otra],w}]
+ cls:[{t,b:[cajas],i:[[palabra,nºCaja]],w}]   match:[{t,p:[[izq,der]],w}]   order:[{t,s:[pasos en orden],w}]
+ draw:[{p:consigna,m:modelo,w}] */
+const TOPICS=[{
+id:"silabas",icon:"🧩",title:"Sílabas",desc:"Divide, cuenta y clasifica las palabras según su número de sílabas.",
+guide:`<h2>🧩 La sílaba</h2>
+<p>Una <b>sílaba</b> es un golpe de voz: cada vez que abrimos y cerramos la boca al hablar, decimos una sílaba. Todas las sílabas tienen al menos una vocal: <i>pan, me-sa, ca-ra-col</i>.</p>
+<h3>Según el número de sílabas</h3>
+<ul><li><b>Monosílabas</b>: una sola sílaba → <i>sol, pan, flor</i></li>
+<li><b>Bisílabas</b>: dos sílabas → <i>me-sa, ca-lor</i></li>
+<li><b>Trisílabas</b>: tres sílabas → <i>pe-lo-ta</i></li>
+<li><b>Polisílabas</b>: más de tres sílabas → <i>bi-ci-cle-ta</i></li></ul>
+<p>💡 <b>Truco:</b> pon la mano debajo de la barbilla y di la palabra despacio. Cada vez que la barbilla baje, ¡es una sílaba nueva!</p>`,
+quiz:[
+{q:"¿Cuántas sílabas tiene 'paraguas'?",o:["Tres","Dos","Cuatro"],w:"pa-ra-guas: la u y la a de 'guas' van juntas en una sílaba, así que son 3 sílabas en total."},
+{q:"¿Cuántas sílabas tiene 'bicicleta'?",o:["Cuatro","Tres","Cinco"],w:"bi-ci-cle-ta tiene 4 sílabas: es una palabra polisílaba."},
+{q:"¿Qué palabra es monosílaba (una sola sílaba)?",o:["Sol","Casa","Pelota"],w:"'Sol' no se puede partir en trozos más pequeños: tiene una sola sílaba."},
+{q:"¿Cuántas sílabas tiene 'avión'?",o:["Dos","Tres","Una"],w:"a-vión: la i y la o de 'vión' van juntas en una sola sílaba."}],
+tf:[
+{q:"'Flor' es una palabra monosílaba.",a:true,w:"'Flor' tiene una sola sílaba: no se puede dividir más."},
+{q:"'Elefante' es una palabra bisílaba.",a:false,w:"'Elefante' tiene 4 sílabas (e-le-fan-te): es polisílaba."},
+{q:"Todas las sílabas tienen al menos una vocal.",a:true,w:"Sin vocal no puede haber sílaba: es la regla de oro."},
+{q:"'Pan' y 'sol' son las dos palabras monosílabas.",a:true,w:"Las dos tienen una sola sílaba."}],
+cls:[{t:"Clasifica cada palabra según su número de sílabas",b:["Monosílaba","Bisílaba","Trisílaba","Polisílaba"],
+i:[["sol",0],["pan",0],["flor",0],["mesa",1],["calor",1],["nieve",1],["ventana",2],["pelota",2],["tenedor",2],["paraguas",2],["bicicleta",3],["mariposa",3],["elefante",3]],
+w:"Cuenta los golpes de voz de cada palabra: 1 = monosílaba, 2 = bisílaba, 3 = trisílaba, más de 3 = polisílaba."}],
+match:[{t:"Une cada palabra con su división en sílabas",p:[["ventana","ven-ta-na"],["bicicleta","bi-ci-cle-ta"],["calor","ca-lor"],["mariposa","ma-ri-po-sa"],["paraguas","pa-ra-guas"]],w:"Separa cada palabra contando los golpes de voz."}],
+order:[
+{t:"Ordena las sílabas de la palabra 'elefante'",s:["e","le","fan","te"],w:"e-le-fan-te: así suena la palabra completa."},
+{t:"Ordena las sílabas de la palabra 'mariposa'",s:["ma","ri","po","sa"],w:"ma-ri-po-sa: cuatro sílabas en orden."},
+{t:"Ordena las sílabas de la palabra 'caracol'",s:["ca","ra","col"],w:"ca-ra-col: tres sílabas en orden."}]
+},{
+id:"diphiato",icon:"🔀",title:"Diptongo e hiato",desc:"Descubre cuándo dos vocales se unen en una sílaba y cuándo se separan.",
+guide:`<h2>🔀 Diptongo e hiato</h2>
+<p>Las vocales <b>a, e, o</b> son <b>fuertes</b>. Las vocales <b>i, u</b> son <b>débiles</b>.</p>
+<h3>Diptongo 🤝</h3>
+<p>Es la unión de <b>dos vocales en la misma sílaba</b>: una fuerte y una débil (o dos débiles). <i>ai-re, a-gua, pa-tio, ciu-dad</i>.</p>
+<h3>Hiato 🙅</h3>
+<p>Cuando <b>dos vocales fuertes</b> van seguidas, no se juntan: cada una va en su propia sílaba. <i>po-e-ma, te-a-tro, ca-er, le-er</i>.</p>
+<p>💡 <b>Truco:</b> si al decir la palabra despacio las dos vocales suenan en el mismo golpe de voz, es diptongo. Si cada una tiene su propio golpe, es hiato.</p>`,
+quiz:[
+{q:"¿Qué palabra tiene diptongo?",o:["Agua","Teatro","Poema"],w:"'Agua' une la u y la a en la misma sílaba: a-gua."},
+{q:"¿Qué palabra tiene hiato?",o:["Caer","Aire","Ciudad"],w:"'Caer' se separa en ca-er: dos vocales fuertes juntas que no se unen."},
+{q:"¿Cuáles son las vocales débiles?",o:["i, u","a, e, o","Todas"],w:"Las vocales débiles (cerradas) son la i y la u."},
+{q:"En la palabra 'patio', ¿qué forman la i y la o?",o:["Un diptongo","Un hiato","Nada especial"],w:"pa-tio: la i (débil) y la o (fuerte) van juntas en la misma sílaba."}],
+tf:[
+{q:"Un diptongo une dos vocales en sílabas distintas.",a:false,w:"El diptongo une las dos vocales en la MISMA sílaba. Si se separan, es un hiato."},
+{q:"En 'ciudad', la u y la i forman un diptongo.",a:true,w:"ciu-dad: dos vocales débiles juntas forman diptongo."},
+{q:"'Leer' tiene un hiato porque sus dos vocales fuertes se separan.",a:true,w:"le-er: las dos vocales fuertes van cada una en su sílaba."},
+{q:"Las vocales fuertes son la i y la u.",a:false,w:"Las vocales fuertes (abiertas) son a, e, o."}],
+fill:[
+{s:"'Aire' tiene un ____ porque las vocales están en la misma sílaba.",b:["diptongo","hiato","triptongo"],w:"ai forma diptongo: ai-re."},
+{s:"'Teatro' tiene un ____ porque las vocales fuertes se separan.",b:["hiato","diptongo","triptongo"],w:"te-a-tro: la e y la a van cada una en su sílaba."}],
+cls:[{t:"Clasifica cada palabra",b:["Diptongo","Hiato","Ninguno de los dos"],
+i:[["aire",0],["ciudad",0],["agua",0],["patio",0],["poema",1],["teatro",1],["caer",1],["leer",1],["mesa",2],["pelota",2],["ventana",2]],
+w:"Busca dos vocales seguidas: si son fuerte+débil o débil+débil, diptongo; si son dos fuertes, hiato; si no hay dos vocales juntas, ninguno."}],
+order:[
+{t:"Ordena las sílabas de 'ciudad' (tiene diptongo)",s:["ciu","dad"],w:"ciu-dad: la u y la i no se separan."},
+{t:"Ordena las sílabas de 'poema' (tiene hiato)",s:["po","e","ma"],w:"po-e-ma: la o y la e se separan."},
+{t:"Ordena las sílabas de 'agua'",s:["a","gua"],w:"a-gua: la u y la a van juntas."}],
+draw:[
+{p:"Escribe la palabra 'ciudad' separada en sílabas con guiones.",m:"ciu-dad",w:"ciu es un diptongo, por eso no se separa."},
+{p:"Escribe la palabra 'poema' separada en sílabas con guiones.",m:"po-e-ma",w:"o y e son vocales fuertes: se separan, es un hiato."}]
+},{
+id:"agullana",icon:"🎯",title:"Agudas y llanas",desc:"Encuentra la sílaba tónica y aprende cuándo llevan tilde.",
+guide:`<h2>🎯 Agudas y llanas</h2>
+<p>En cada palabra hay una sílaba que suena más fuerte: es la <b>sílaba tónica</b>. Según dónde esté, la palabra es de un tipo o de otro.</p>
+<h3>Agudas</h3>
+<p>La sílaba tónica es la <b>última</b>: <i>ra-TÓN, re-LOJ, ca-MIÓN</i>. Llevan tilde si acaban en <b>N, S o vocal</b>: ca-mión ✓, ra-tón ✓, pero re-loj ✗ (acaba en J).</p>
+<h3>Llanas</h3>
+<p>La sílaba tónica es la <b>penúltima</b> (la segunda empezando por el final): <i>ME-sa, ÁR-bol</i>. Llevan tilde si <b>NO</b> acaban en N, S ni vocal: ár-bol ✓ (acaba en L), pero me-sa ✗ (acaba en vocal).</p>
+<p>💡 <b>Truco:</b> ¡las reglas son al revés una de otra! Las agudas necesitan N, S o vocal para llevar tilde; las llanas necesitan NO tenerlas.</p>`,
+quiz:[
+{q:"¿Dónde está la sílaba tónica en las palabras agudas?",o:["En la última sílaba","En la penúltima","En la antepenúltima"],w:"Las agudas llevan el golpe de voz en la última sílaba."},
+{q:"¿Dónde está la sílaba tónica en las palabras llanas?",o:["En la penúltima sílaba","En la última","En la antepenúltima"],w:"Las llanas llevan el golpe de voz en la penúltima sílaba."},
+{q:"¿Por qué 'camión' lleva tilde?",o:["Es aguda y acaba en N","Es llana y acaba en vocal","Es esdrújula"],w:"Las agudas llevan tilde si acaban en N, S o vocal. 'Camión' acaba en N."},
+{q:"¿Por qué 'árbol' lleva tilde?",o:["Es llana y no acaba en N, S ni vocal","Es aguda y acaba en vocal","No debería llevar tilde"],w:"Las llanas llevan tilde cuando NO acaban en N, S ni vocal. 'Árbol' acaba en L."},
+{q:"¿Cuál de estas palabras es aguda?",o:["Ratón","Mesa","Árbol"],w:"'Ratón' lleva la fuerza de voz en la última sílaba: ra-TÓN."}],
+tf:[
+{q:"Las palabras agudas siempre llevan tilde.",a:false,w:"Solo llevan tilde si acaban en N, S o vocal."},
+{q:"'Mesa' es llana y no lleva tilde porque acaba en vocal.",a:true,w:"Las llanas NO llevan tilde si acaban en vocal."},
+{q:"'Reloj' es aguda y no lleva tilde.",a:true,w:"Acaba en J, no en N, S ni vocal, así que no lleva tilde."},
+{q:"'Lápiz' es una palabra aguda.",a:false,w:"'Lápiz' es llana: la fuerza de voz está en 'lá', la penúltima sílaba."}],
+fill:[
+{s:"'Pantalón' es aguda y acaba en ____, por eso lleva tilde.",b:["n","vocal","l"],w:"Acaba en N, una de las letras que hacen llevar tilde a las agudas."},
+{s:"'Césped' es llana y acaba en ____, por eso lleva tilde.",b:["d","vocal","s"],w:"Las llanas llevan tilde si NO acaban en N, S o vocal, como la D."}],
+cls:[{t:"Clasifica cada palabra",b:["Aguda","Llana"],
+i:[["camión",0],["reloj",0],["pared",0],["sofá",0],["pantalón",0],["ratón",0],["mesa",1],["árbol",1],["lápiz",1],["césped",1],["silla",1],["camisa",1]],
+w:"Busca la sílaba tónica: si es la última, aguda; si es la penúltima, llana."}],
+match:[{t:"Une cada palabra con su clasificación",p:[["camión","Aguda"],["mesa","Llana"],["ratón","Aguda"],["árbol","Llana"],["reloj","Aguda"],["silla","Llana"]],w:"Fíjate en dónde suena más fuerte cada palabra."}]
+},{
+id:"esdrujulas",icon:"🚀",title:"Esdrújulas y sobresdrújulas",desc:"Las palabras que siempre, siempre llevan tilde.",
+guide:`<h2>🚀 Esdrújulas y sobresdrújulas</h2>
+<h3>Esdrújulas</h3>
+<p>La sílaba tónica es la <b>antepenúltima</b> (la tercera empezando por el final): <i>MÚ-si-ca, te-LÉ-fo-no, MÉ-di-co</i>. <b>Siempre</b> llevan tilde, sin excepción.</p>
+<h3>Sobresdrújulas</h3>
+<p>La sílaba tónica va <b>antes</b> de la antepenúltima: <i>CUÉN-ta-se-lo, CÓ-me-te-lo</i>. Suelen ser verbos con palabras pegadas detrás. <b>Siempre</b> llevan tilde también.</p>
+<p>💡 <b>Truco:</b> si al contar desde el final la sílaba fuerte es la tercera o una más lejana, ¡seguro que lleva tilde!</p>`,
+quiz:[
+{q:"¿Dónde está la sílaba tónica en las esdrújulas?",o:["En la antepenúltima sílaba","En la última","En la penúltima"],w:"Mú-si-ca: el golpe de voz está en la antepenúltima sílaba."},
+{q:"¿Llevan tilde todas las palabras esdrújulas?",o:["Sí, siempre","Solo algunas","Nunca"],w:"Todas las esdrújulas llevan tilde, sin excepción."},
+{q:"¿Cuál de estas es una palabra sobresdrújula?",o:["Cuéntaselo","Música","Teléfono"],w:"'Cuéntaselo' lleva el acento antes de la antepenúltima sílaba."}],
+tf:[
+{q:"'Teléfono' es una palabra esdrújula.",a:true,w:"Te-LÉ-fo-no: el acento está en la antepenúltima sílaba."},
+{q:"Las sobresdrújulas nunca llevan tilde.",a:false,w:"Las sobresdrújulas SIEMPRE llevan tilde."},
+{q:"'Pájaro' es esdrújula.",a:true,w:"PÁ-ja-ro: acento en la antepenúltima sílaba."}],
+cls:[{t:"Clasifica cada palabra",b:["Esdrújula","Sobresdrújula"],
+i:[["música",0],["teléfono",0],["médico",0],["pájaro",0],["sábana",0],["cuéntaselo",1],["cómetelo",1],["explícamelo",1],["dígaselo",1]],
+w:"Cuenta desde el final: si la tónica es la tercera sílaba, esdrújula; si está más lejos aún, sobresdrújula."}],
+match:[{t:"Une cada palabra con su clasificación",p:[["música","Esdrújula"],["médico","Esdrújula"],["cuéntaselo","Sobresdrújula"],["explícamelo","Sobresdrújula"]],w:"Cuenta las sílabas desde el final de cada palabra."}],
+order:[
+{t:"Ordena las sílabas de 'teléfono'",s:["te","lé","fo","no"],w:"te-lé-fo-no: cuatro sílabas en orden."},
+{t:"Ordena las sílabas de 'música'",s:["mú","si","ca"],w:"mú-si-ca: tres sílabas en orden."}]
+},{
+id:"hiatotilde",icon:"✨",title:"Hiatos con tilde",desc:"El caso especial: cuando la vocal débil 'gana' y rompe el diptongo.",
+guide:`<h2>✨ Hiatos con tilde (hiato acentual)</h2>
+<p>A veces, en un grupo de vocales que parece diptongo, la vocal débil (<b>i, u</b>) suena con mucha fuerza. Cuando eso pasa, las vocales <b>se separan</b> y la vocal débil <b>siempre lleva tilde</b>, aunque no siga las reglas normales de agudas, llanas o esdrújulas.</p>
+<p>Por eso decimos: <i>dí-a, ba-úl, pa-ís, ra-íz, ma-íz, rí-o</i>. ¡Compáralo con <i>a-gua</i> o <i>pa-tio</i>, donde la vocal débil no suena fuerte y no hay tilde!</p>
+<p>💡 <b>Truco:</b> di la palabra despacio. Si notas que la i o la u "tiran" de la fuerza de la voz hacia ellas, seguro que llevan tilde y forman un hiato.</p>`,
+quiz:[
+{q:"¿Por qué 'día' lleva tilde en la í?",o:["Porque la i suena con mucha fuerza y rompe el diptongo, formando un hiato","Porque todas las palabras de dos sílabas llevan tilde","Porque es una palabra aguda"],w:"Cuando la vocal débil suena con fuerza, siempre lleva tilde y se separa en sílabas distintas: dí-a."},
+{q:"¿Cuál de estas palabras tiene un hiato con tilde?",o:["Baúl","Agua","Patio"],w:"Ba-úl: la ú suena con fuerza y rompe el diptongo esperado."},
+{q:"'Río' se divide en:",o:["rí-o (hiato)","rio (una sola sílaba)","ri-o-o"],w:"Como la í suena con fuerza, se separa: rí-o."}],
+tf:[
+{q:"'Agua' lleva tilde en la u porque suena más fuerte.",a:false,w:"En 'agua' la u es débil de verdad y no suena con fuerza: 'ua' forma un diptongo normal, sin tilde."},
+{q:"Cuando la vocal débil suena con fuerza, siempre lleva tilde aunque no siga la regla de agudas o llanas.",a:true,w:"Esta es la regla especial del hiato con tilde: dí-a, ba-úl, pa-ís…"},
+{q:"'Maíz' se divide en dos sílabas: ma-íz.",a:true,w:"La í suena con fuerza y rompe el diptongo: ma-íz."}],
+cls:[{t:"Clasifica cada palabra",b:["Hiato con tilde","Diptongo (sin tilde en la débil)"],
+i:[["día",0],["baúl",0],["país",0],["raíz",0],["maíz",0],["río",0],["agua",1],["patio",1],["ciudad",1],["aire",1]],
+w:"Si la vocal débil suena con fuerza, lleva tilde y es hiato. Si no, forma un diptongo normal."}],
+match:[{t:"Une cada palabra con su división en sílabas",p:[["día","dí-a"],["baúl","ba-úl"],["país","pa-ís"],["raíz","ra-íz"],["río","rí-o"]],w:"La vocal débil tónica siempre se separa y lleva tilde."}],
+draw:[
+{p:"Escribe 'país' separada en sílabas, con la tilde en su sitio.",m:"pa-ís",w:"La í suena fuerte: se separa de la a y lleva tilde."},
+{p:"Escribe 'baúl' separada en sílabas, con la tilde en su sitio.",m:"ba-úl",w:"La ú suena fuerte: rompe el diptongo y lleva tilde."}]
+}];
+
+/* ================= CÓDIGO (no hace falta tocarlo) ================= */
+const $=s=>document.querySelector(s);
+const sh=a=>{a=a.slice();for(let i=a.length;i>1;){const j=Math.random()*i|0;i--;[a[i],a[j]]=[a[j],a[i]]}return a};
+const TABS=["quiz","tf","fill","cls","match","order","draw"],TI=["🔘","✅","✏️","📦","🔗","🔢","🎨"];
+const TL=["Elige","V o F","Completa","Clasifica","Relaciona","Ordena","Dibuja"];
+let pts=0,Q={},cur="",done=false,AC=null,S={o:null,id:"",tab:"quiz"};
+function snd(f,d,t){try{AC=AC||new(window.AudioContext||window.webkitAudioContext)();const o=AC.createOscillator(),g=AC.createGain();o.type=t||"sine";o.frequency.value=f;g.gain.value=.07;o.connect(g);g.connect(AC.destination);o.start();g.gain.exponentialRampToValueAtTime(.001,AC.currentTime+d);o.stop(AC.currentTime+d)}catch(e){}}
+const okS=()=>{snd(660,.15);setTimeout(()=>snd(880,.2),130)},koS=()=>snd(200,.3,"triangle");
+function say(t){try{const s=window.speechSynthesis;if(!s||!window.SpeechSynthesisUtterance)return;s.cancel();const x=new SpeechSynthesisUtterance(String(t).replace(/<[^>]+>/g,""));x.lang="es-ES";x.rate=.85;s.speak(x)}catch(e){}}
+function conf(){try{for(let i=0;i<24;i++){const d=document.createElement("div");d.className="cf";d.textContent=["⭐","🎉","✨","🌟"][i%4];d.style.left=Math.random()*95+"vw";d.style.animationDelay=Math.random()*.4+"s";document.body.appendChild(d);setTimeout(()=>d.remove(),2400)}}catch(e){}}
+const upd=()=>document.querySelectorAll(".pts").forEach(e=>e.textContent=pts);
+const allTopic=()=>{const r={id:"all",icon:"🎲",title:"Repaso general",guide:TOPICS.map(t=>t.guide).join("<hr>")};TABS.forEach(k=>r[k]=[].concat(...TOPICS.map(t=>t[k]||[])));return r};
+
+function home(){S.o=null;shut();$("#app").innerHTML=`<main><h1>📚 ¡Hola! Vamos a jugar con las sílabas</h1>
+<p>Elige un tema, haz los retos y consigue estrellas ⭐. Tienes <b class="pts">${pts}</b> estrellas.</p>
+<div class="lesson"><h2>🔊 Mini-lección</h2><p>Las palabras se dividen en <b>sílabas</b>. La que suena más fuerte es la <b>sílaba tónica</b>. A veces esa fuerza se marca con una <b>tilde</b> ( ´ ). ¡Descubre las reglas en cada tema!</p></div>
+<div class="cards">${TOPICS.map(t=>`<button class="card" onclick="openT('${t.id}')"><span class="ic">${t.icon}</span><b>${t.title}</b><br>${t.desc}</button>`).join("")}</div>
+<button class="pri" onclick="openT('all')">🎲 Repaso general</button></main>`}
+function openT(id,tab){S.id=id;S.o=id=="all"?allTopic():TOPICS.find(t=>t.id==id);S.tab=tab||"quiz";shell()}
+function shell(){$("#app").innerHTML=`<div id="bar"><button onclick="home()">🏠 Inicio</button><button onclick="guide()">📖 Guía</button><b style="margin-left:auto">${S.o.icon} ⭐ <span class="pts">${pts}</span></b></div>
+<main><div class="tabs">${TABS.map((k,i)=>`<button class="${k==S.tab?"pri":""}" onclick="S.tab='${k}';shell()">${TI[i]} ${TL[i]}</button>`).join("")}</div><div id="ex"></div></main>`;loadEx()}
+function pick(){const k=S.o.id+S.tab,pool=S.o[S.tab]||[];if(!pool.length)return null;let q=Q[k];if(!q||!q.l.length){const l=sh(pool);if(q&&l.length>1&&l[0]===q.last)l.push(l.shift());q={l,last:q?q.last:null};Q[k]=q}const it=q.l.shift();q.last=it;return it}
+function loadEx(){done=false;const it=pick(),ex=$("#ex");if(!it){ex.innerHTML="<p>Aún no hay retos de este tipo en este tema. ¡Prueba otra pestaña!</p>";return}
+ex.innerHTML=`<div id="q"></div><div id="fb"></div><div class="row"><button onclick="say(cur)">🔊 Escuchar</button><button class="pri" onclick="loadEx()">Siguiente ➡️</button><button onclick="home()">🏠 Inicio</button><button onclick="guide()">📖 Guía</button></div>`;
+try{R[S.tab](it,$("#q"))}catch(e){ex.innerHTML="<p>Ups, este reto no se pudo cargar. Pulsa Siguiente.</p>"}}
+function fin(g,w){if(done)return;done=true;if(g){pts++;upd();okS();conf()}else koS();$("#fb").innerHTML=`<div class="fbx ${g?"good":"bad"}"><b>${g?"🎉 ¡Muy bien!":"🤔 ¡Casi! Sigue intentándolo."}</b><br>¿Por qué? ${w}</div>`}
+function mc(b,q,o,w,shuf,blank){cur=q.replace("____","…");const L=o.map((x,i)=>[x,i]),l=shuf?sh(L):L;
+b.innerHTML=`<h2 id="qq">${q}</h2>`+l.map(([x,i])=>`<button class="opt" data-i="${i}">${x}</button>`).join("");
+b.querySelectorAll(".opt").forEach(x=>x.onclick=()=>{if(done)return;const g=x.dataset.i=="0";x.classList.add(g?"good":"bad");if(!g)b.querySelector('[data-i="0"]').classList.add("good");if(blank)$("#qq").innerHTML=q.replace("____","<u>"+o[0]+"</u>");fin(g,w)})}
+const flash=x=>{x.classList.add("bad");setTimeout(()=>x.classList.remove("bad"),500)};
+const R={
+quiz:(i,b)=>mc(b,i.q,i.o,i.w,1),
+tf:(i,b)=>{mc(b,i.q,i.a?["✅ Verdadero","❌ Falso"]:["❌ Falso","✅ Verdadero"],i.w,0);if(!i.a){const bs=b.querySelectorAll(".opt");bs[0].parentNode.insertBefore(bs[1],bs[0])}},
+fill:(i,b)=>mc(b,"Completa: "+i.s,i.b,i.w,1,1),
+cls:(it,b)=>{cur=it.t;let sel=null,n=it.i.length;
+b.innerHTML=`<h2>${it.t}</h2><p>Toca una palabra y luego la caja donde va.</p><div id="pool">${sh(it.i).map(([x,c])=>`<button class="chip" data-c="${c}">${x}</button>`).join("")}</div><div class="boxes">${it.b.map((x,i)=>`<div class="bx" data-b="${i}"><b>${x}</b><div></div></div>`).join("")}</div>`;
+b.querySelectorAll(".chip").forEach(c=>c.onclick=()=>{b.querySelectorAll(".chip").forEach(x=>x.classList.remove("sel"));sel=c;c.classList.add("sel")});
+b.querySelectorAll(".bx").forEach(x=>x.onclick=()=>{if(!sel||done)return;if(sel.dataset.c==x.dataset.b){x.lastChild.appendChild(sel);sel.classList.remove("sel");sel.disabled=true;sel=null;okS();if(--n==0)fin(true,it.w)}else{koS();flash(sel)}})},
+match:(it,b)=>{cur=it.t;let sel=null,n=it.p.length;const L=sh(it.p.map((p,i)=>[p[0],i])),Rr=sh(it.p.map((p,i)=>[p[1],i]));
+const col=(a,s)=>`<div>${a.map(([x,i])=>`<button class="opt m" data-s="${s}" data-i="${i}">${x}</button>`).join("")}</div>`;
+b.innerHTML=`<h2>${it.t}</h2><p>Toca una palabra de la izquierda y después su pareja de la derecha.</p><div class="two">${col(L,"l")}${col(Rr,"r")}</div>`;
+b.querySelectorAll(".m").forEach(x=>x.onclick=()=>{if(x.classList.contains("good")||done)return;
+if(x.dataset.s=="l"){b.querySelectorAll('[data-s="l"]').forEach(y=>y.classList.remove("sel"));sel=x;x.classList.add("sel");return}
+if(!sel)return;if(sel.dataset.i==x.dataset.i){sel.classList.remove("sel");sel.classList.add("good");x.classList.add("good");sel=null;okS();if(--n==0)fin(true,it.w)}else{koS();flash(x)}})},
+order:(it,b)=>{cur=it.t;let k=0;b.innerHTML=`<h2>${it.t}</h2><p>Toca las sílabas en el orden correcto.</p><ol id="ol"></ol><div id="pool">${sh(it.s.map((x,i)=>[x,i])).map(([x,i])=>`<button class="chip" data-i="${i}">${x}</button>`).join("")}</div>`;
+b.querySelectorAll(".chip").forEach(c=>c.onclick=()=>{if(c.disabled)return;if(c.dataset.i==k){k++;c.disabled=true;$("#ol").innerHTML+=`<li>${c.textContent}</li>`;okS();if(k==it.s.length)fin(true,it.w)}else{koS();flash(c)}})},
+draw:(it,b)=>{cur=it.p;b.innerHTML=`<h2>${it.p}</h2><canvas id="cv"></canvas><div class="row"><button id="cl">🧽 Borrar</button><button id="mo">👀 Ver modelo</button><button class="pri" id="dn">⭐ ¡Ya lo hice!</button></div><div id="mod" class="fbx good" style="display:none"></div>`;
+const c=$("#cv");c.width=c.clientWidth||600;c.height=c.clientHeight||280;const x=c.getContext("2d");x.lineCap="round";x.strokeStyle="#2b2a4c";let d=false,lp=null;
+const P=e=>{const r=c.getBoundingClientRect();return[(e.clientX-r.left)*c.width/r.width,(e.clientY-r.top)*c.height/r.height]};
+const W=e=>e.pointerType=="pen"&&e.pressure?2+e.pressure*6:4;
+c.onpointerdown=e=>{e.preventDefault();d=true;try{c.setPointerCapture(e.pointerId)}catch(_){}lp=P(e);x.lineWidth=W(e);x.beginPath();x.moveTo(lp[0],lp[1]);x.lineTo(lp[0]+.1,lp[1]);x.stroke()};
+c.onpointermove=e=>{if(!d)return;const p=P(e);x.lineWidth=W(e);x.beginPath();x.moveTo(lp[0],lp[1]);x.lineTo(p[0],p[1]);x.stroke();lp=p};
+c.onpointerup=c.onpointercancel=()=>{d=false};
+$("#cl").onclick=()=>x.clearRect(0,0,c.width,c.height);
+$("#mo").onclick=()=>{$("#mod").style.display="block";$("#mod").innerHTML="🔎 Modelo: "+it.m};
+$("#dn").onclick=()=>fin(true,it.w||"Escribir y comparar ayuda a recordar.")}};
+
+function guide(){const o=S.o,m=$("#md");m.innerHTML=`<div class="mb"><button class="pri" onclick="shut()">✖ Cerrar</button><div>${o.guide}</div><p><button class="pri" onclick="shut()">✖ Cerrar</button></p></div>`;m.classList.add("on")}
+function shut(){const m=$("#md");if(m)m.classList.remove("on")}
+$("#md").onclick=e=>{if(e.target.id=="md")shut()};
+document.addEventListener("keydown",e=>{if(e.key=="Escape")shut()});
+home();
+</script></body></html>
